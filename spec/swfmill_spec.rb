@@ -68,4 +68,24 @@ context Swfmill, ".loadにCWSを渡した場合" do
     Swfmill.should_receive(:to_xmlstr).with("12345", anything)
     Swfmill.load("CWSxxxxx12345")
   end
+
+  it "第2引数に{ :version => 9, :compressed => false }を受け取ること" do
+    Swfmill.should_receive(:to_xmlstr).with("abc", { :version => 9, :compressed => false })
+    Swfmill.load "FWS\x09xxxxabc"
+  end
+
+  it "第2引数に{ :version => 1, :compressed => true }を受け取ること" do
+    Swfmill.should_receive(:to_xmlstr).with("abc", { :version => 1, :compressed => true })
+    Swfmill.load "CWS\x01xxxx" + Zlib::Deflate.deflate("abc")
+  end
+end
+
+context Swfmill, ".to_xmlstr" do
+  it { lambda{ Swfmill.to_xmlstr }.should raise_exception }
+  it { lambda{ Swfmill.to_xmlstr(:non_string_object) }.should raise_exception }
+  it { lambda{ Swfmill.to_xmlstr("", :non_hash_object) }.should raise_exception }
+
+  it "XML文字列を返すこと" do
+    Swfmill.load(dummy_data).should include '<?xml version="1.0"?>'
+  end
 end
