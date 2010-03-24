@@ -13,6 +13,7 @@ begin
     gem.add_development_dependency "rspec", ">= 1.2.9"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
     gem.files << File.readlines(".swfmill").map{ |fn| fn.chomp }
+    gem.files << %w(lib/swfmill_ext.so)
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
@@ -31,7 +32,7 @@ Spec::Rake::SpecTask.new(:rcov) do |spec|
   spec.rcov = true
 end
 
-task :spec => :check_dependencies
+task :spec => [:check_dependencies, :compile]
 
 task :default => :spec
 
@@ -43,4 +44,17 @@ Rake::RDocTask.new do |rdoc|
   rdoc.title = "swfmill #{version}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
+end
+
+task :compile => ['lib/swfmill_ext.so']
+file 'lib/swfmill_ext.so' => FileList['ext/extconf.rb', 'ext/Makefile', 'ext/*.c', 'ext/*.cc', 'ext/*.h'] do
+  Dir.chdir('ext') do
+    sh 'make'
+  end
+  sh 'mv ext/swfmill_ext.so lib/swfmill_ext.so'
+end
+file 'ext/Makefile' => 'ext/extconf.rb' do
+  Dir.chdir('ext') do
+    ruby 'extconf.rb'
+  end
 end

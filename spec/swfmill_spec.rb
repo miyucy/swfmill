@@ -6,6 +6,7 @@ describe Swfmill do
   it { Swfmill.should be_respond_to :load }
   it { Swfmill.should be_respond_to :load_file }
   it { Swfmill.should be_respond_to :load_stream }
+  it { Swfmill.should be_respond_to :to_xmlstr }
 end
 
 context Swfmill, ".load_file" do
@@ -66,21 +67,5 @@ context Swfmill, ".loadにCWSを渡した場合" do
 
     Swfmill.should_receive(:to_xmlstr).with("12345", anything)
     Swfmill.load("CWSxxxxx12345")
-  end
-end
-
-context Swfmill, ".to_xmlstr" do
-  it "第2引数に{ :version => 9, :compressed => false }を受け取ること" do
-    Swfmill.should_receive(:to_xmlstr).with("abc", { :version => 9, :compressed => false })
-    Swfmill.load "FWS\x09xxxxabc"
-  end
-
-  it "第2引数に{ :version => 1, :compressed => true }を受け取ること" do
-    Swfmill.should_receive(:to_xmlstr).with("abc", { :version => 1, :compressed => true })
-    Swfmill.load "CWS\x01xxxx" + Zlib::Deflate.deflate("abc")
-  end
-
-  it "XML文字列を返すこと" do
-    Swfmill.load(dummy_data).should include '<?xml version="1.0"?>'
   end
 end

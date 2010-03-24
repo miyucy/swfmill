@@ -1,3 +1,4 @@
+require "swfmill_ext"
 require "zlib"
 
 module Swfmill
@@ -23,9 +24,5 @@ module Swfmill
 
   def self.load_stream(io)
     load(io.read)
-  end
-
-  def self.to_xmlstr(a1, a2)
-    '<?xml version="1.0"?>'
   end
 end
