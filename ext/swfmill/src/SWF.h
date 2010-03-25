@@ -23,6 +23,8 @@ struct Context {
 		bool debugTrace;
 		bool exportAssets;
 		bool quiet;
+		bool convertEncoding;
+		const char *swf_encoding;
 		
 		bool isLast;
 		char tagVersion;
