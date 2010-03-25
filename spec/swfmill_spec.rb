@@ -117,3 +117,9 @@ XML
     lambda { Swfmill.to_swf(xml) }.should_not raise_exception
   end
 end
+
+context Swfmill, ".publish" do
+  it "Swfmill.loadしたデータを元に戻せること" do
+    Swfmill.publish(Swfmill.load(dummy_data)).should == dummy_data
+  end
+end

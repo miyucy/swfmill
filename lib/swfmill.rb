@@ -23,4 +23,8 @@ module Swfmill
   def self.load_stream(io)
     load(io.read)
   end
+
+  def self.publish(xmlstr)
+    to_swf(xmlstr)
+  end
 end
