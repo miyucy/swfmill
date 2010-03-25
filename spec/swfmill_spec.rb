@@ -89,3 +89,38 @@ context Swfmill, ".to_xmlstr" do
     Swfmill.load(dummy_data).should include '<?xml version="1.0"?>'
   end
 end
+
+context Swfmill, ".to_swf" do
+  it do
+    lambda { Swfmill.to_swf("") }.should raise_exception
+  end
+
+  it do
+    xml = <<XML
+<?xml version="1.0"?>
+<fla version="7" compressed="0">
+</fla>
+XML
+    lambda { Swfmill.to_swf(xml) }.should raise_exception
+  end
+
+  it do
+    xml = <<XML
+<?xml version="1.0"?>
+<swf version="7" compressed="0">
+</swf>
+XML
+    lambda { Swfmill.to_swf(xml) }.should raise_exception
+  end
+
+  it do
+    xml = <<XML
+<?xml version="1.0"?>
+<swf version="7" compressed="0">
+  <Header framerate="0">
+  </Header>
+</swf>
+XML
+    lambda { Swfmill.to_swf(xml) }.should_not raise_exception
+  end
+end
