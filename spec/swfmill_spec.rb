@@ -2,13 +2,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 require "tempfile"
 
-describe Swfmill do
-  it { Swfmill.should be_respond_to :load }
-  it { Swfmill.should be_respond_to :load_file }
-  it { Swfmill.should be_respond_to :load_stream }
-  it { Swfmill.should be_respond_to :to_xmlstr }
-end
-
 context Swfmill, ".load_file" do
   it "openできなければ例外が発生すること" do
     lambda{ Swfmill.load_file(nil) }.should raise_exception
