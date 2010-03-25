@@ -1,6 +1,26 @@
 = swfmill
 
-Description goes here.
+== USAGE:
+
+  require 'swfmill'
+
+=== to XML String
+
+from stream
+
+  xmlstr = Swfmill.load_stream(st) if st.responde_to?(:read)
+
+from file path
+
+  xmlstr = Swfmill.load_file("path/to/swf_file")
+
+from String
+
+  xmlstr = Swfmill.parse(File.open("path/to/swf_file"){|st| st.read })
+
+=== to SWF Data(String)
+
+  swf = Swfmill.publish(xmlstr)
 
 == Note on Patches/Pull Requests
  
