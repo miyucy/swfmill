@@ -79,7 +79,7 @@ context Swfmill, ".to_xmlstr" do
   it { lambda{ Swfmill.to_xmlstr("", :non_hash_object) }.should raise_exception }
 
   it "XML文字列を返すこと" do
-    Swfmill.parse(dummy_data).should include '<?xml version="1.0"?>'
+    Swfmill.parse(dummy_data).should include '<?xml version="1.0"'
   end
 end
 
