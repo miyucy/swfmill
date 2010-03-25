@@ -38,6 +38,8 @@ have_header("png.h")
 dir_config("zlib")
 have_header("zlib.h")
 
+have_func("iconv", "iconv.h") or have_library("iconv", "iconv", "iconv.h")
+
 have_library("stdc++")
 
 $CFLAGS  += " -I./swfmill/src -I./swfmill/src/swft -I./swfmill/src/xslt"
