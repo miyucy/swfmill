@@ -81,7 +81,7 @@ VALUE swfmill_ext_to_xmlstr(int argc, VALUE *argv, VALUE self)
 
         char* xml_data = NULL;
         int   xml_size;
-        xmlDocDumpFormatMemory(doc, (xmlChar **)&xml_data, &xml_size, 1);
+        xmlDocDumpFormatMemoryEnc(doc, (xmlChar **)&xml_data, &xml_size, "UTF-8", 1);
 
         if(xml_size > 0)
         {
