@@ -2,7 +2,7 @@ require "swfmill_ext"
 require "zlib"
 
 module Swfmill
-  def self.load(str)
+  def self.parse(str)
     str = str.to_s
 
     signature = str[0, 3]
@@ -20,8 +20,8 @@ module Swfmill
     open(fn, "rb"){ |f| load_stream(f) }
   end
 
-  def self.load_stream(io)
-    load(io.read)
+  def self.load_stream(st)
+    parse(st.read)
   end
 
   def self.publish(xmlstr)
