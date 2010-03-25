@@ -45,15 +45,19 @@ $LDFLAGS += " -L./swfmill/src/swft/.libs -lswft -L./swfmill/src/xslt/.libs -lswf
 
 create_makefile("swfmill_ext")
 
-Dir.chdir(File.dirname(__FILE__) + "/swfmill") do
-  env  = %Q|FREETYPE_CFLAGS=\"#{$FREETYPE_CFLAGS}\" FREETYPE_LIBS=\"#{$FREETYPE_LIBS}\" |
-  env += %Q|XML_CFLAGS=\"#{$XML_CFLAGS}\" XML_LIBS=\"#{$XML_LIBS}\" |
-  env += %Q|XSLT_CFLAGS=\"#{$XSLT_CFLAGS}\" XSLT_LIBS=\"#{$XSLT_LIBS}\" |
-  env += %Q|PNG_CFLAGS=\"#{$PNG_CFLAGS}\" PNG_LIBS=\"#{$PNG_LIBS}\" |
-  cmd = env + "./configure -C --disable-dependency-tracking"
-  raise "cannot exec configure" unless system(cmd)
+Dir.chdir("swfmill") do
+  cmd = "sh autogen.sh"
+  raise "error: #{cmd}" unless system(cmd)
+  cmd = <<CMD
+sh configure --disable-dependency-tracking \
+FREETYPE_CFLAGS="#{$FREETYPE_CFLAGS}" FREETYPE_LIBS="#{$FREETYPE_LIBS}" \
+XML_CFLAGS="#{$XML_CFLAGS}" XML_LIBS="#{$XML_LIBS}" \
+XSLT_CFLAGS="#{$XSLT_CFLAGS}" XSLT_LIBS="#{$XSLT_LIBS}" \
+PNG_CFLAGS="#{$PNG_CFLAGS}" PNG_LIBS="#{$PNG_LIBS}"
+CMD
+  raise "error: #{cmd}" unless system(cmd)
   cmd = "make"
-  raise "cannot exec make" unless system(cmd)
+  raise "error: #{cmd}" unless system(cmd)
 end
 
 objs_prefix = "swfmill/src/"

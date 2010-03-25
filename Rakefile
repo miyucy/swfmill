@@ -13,7 +13,6 @@ begin
     gem.add_development_dependency "rspec", ">= 1.2.9"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
     gem.files << File.readlines(".swfmill").map{ |fn| fn.chomp }
-    gem.files << %w(lib/swfmill_ext.so)
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
