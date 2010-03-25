@@ -16,6 +16,7 @@ static VALUE rb_eSwfmill_EOFError;
     {
       :version => Fixnum,
       :compressed => Boolean,
+      :encoding => String,
     }
  */
 VALUE swfmill_ext_to_xmlstr(int argc, VALUE *argv, VALUE self)
@@ -25,6 +26,7 @@ VALUE swfmill_ext_to_xmlstr(int argc, VALUE *argv, VALUE self)
 
     unsigned char version = 7;
     bool       compressed = false;
+    char*        encoding = NULL;
 
     Check_Type(arg_str, T_STRING);
     if(arg_num == 2)
@@ -42,6 +44,12 @@ VALUE swfmill_ext_to_xmlstr(int argc, VALUE *argv, VALUE self)
         {
             compressed = cmp == Qtrue;
         }
+
+        VALUE enc = rb_hash_aref(arg_param, ID2SYM(rb_intern("encoding")));
+        if(!NIL_P(enc))
+        {
+            encoding = StringValuePtr(enc);
+        }
     }
 
     unsigned char* data = (unsigned char*)StringValuePtr(arg_str);
@@ -51,6 +59,12 @@ VALUE swfmill_ext_to_xmlstr(int argc, VALUE *argv, VALUE self)
     {
         SWF::Context context;
         SWF::Reader reader(data, size);
+        context.swfVersion = version;
+        if(encoding != NULL)
+        {
+            context.convertEncoding = true;
+            context.swf_encoding = encoding;
+        }
         header.parse(&reader, size, &context);
         switch(reader.getError())
         {
@@ -171,11 +185,11 @@ VALUE swfmill_ext_to_swf(int argc, VALUE *argv, VALUE self)
     }
 
     xmlNodePtr headerNode = root->children;
-	while((headerNode != NULL) &&
+    while((headerNode != NULL) &&
           (headerNode->name == NULL || strcmp((const char*)headerNode->name, "Header") != 0))
     {
-		headerNode = headerNode->next;
-	}
+        headerNode = headerNode->next;
+    }
     if(headerNode == NULL)
     {
         xmlFreeDoc(doc);
