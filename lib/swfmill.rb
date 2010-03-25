@@ -2,8 +2,6 @@ require "swfmill_ext"
 require "zlib"
 
 module Swfmill
-  class Error < StandardError; end
-
   def self.load(str)
     str = str.to_s
 
