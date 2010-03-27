@@ -60,11 +60,6 @@ VALUE swfmill_ext_to_xmlstr(int argc, VALUE *argv, VALUE self)
         SWF::Context context;
         SWF::Reader reader(data, size);
         context.swfVersion = version;
-        if(encoding != NULL)
-        {
-            context.convertEncoding = true;
-            context.swf_encoding = encoding;
-        }
         header.parse(&reader, size, &context);
         switch(reader.getError())
         {
@@ -91,11 +86,17 @@ VALUE swfmill_ext_to_xmlstr(int argc, VALUE *argv, VALUE self)
         xmlSetProp(root, (const xmlChar*)"compressed", (const xmlChar*)tmp);
 
         context.swfVersion = version;
+        if(encoding != NULL)
+        {
+            context.convertEncoding = true;
+            context.swf_encoding = encoding;
+        }
+
         header.writeXML(root, &context);
 
         char* xml_data = NULL;
         int   xml_size;
-        xmlDocDumpFormatMemoryEnc(doc, (xmlChar **)&xml_data, &xml_size, "UTF-8", 1);
+        xmlDocDumpMemoryEnc(doc, (xmlChar **)&xml_data, &xml_size, "UTF-8");
 
         if(xml_size > 0)
         {
@@ -142,6 +143,7 @@ VALUE swfmill_ext_to_swf(int argc, VALUE *argv, VALUE self)
     bool       compressed = false;
     int          compress = 0;
     int    compress_level = Z_BEST_COMPRESSION;
+    char*        encoding = NULL;
 
     Check_Type(arg_str, T_STRING);
     if(arg_num == 2)
@@ -165,6 +167,12 @@ VALUE swfmill_ext_to_swf(int argc, VALUE *argv, VALUE self)
         if(!NIL_P(cmp))
         {
             compress = cmp == Qtrue ? 1 : 2;
+        }
+
+        VALUE enc = rb_hash_aref(arg_param, ID2SYM(rb_intern("encoding")));
+        if(!NIL_P(enc))
+        {
+            encoding = StringValuePtr(enc);
         }
     }
 
@@ -226,6 +234,11 @@ VALUE swfmill_ext_to_swf(int argc, VALUE *argv, VALUE self)
     {
         SWF::Context context;
         context.swfVersion = version;
+        if(encoding != NULL)
+        {
+            context.convertEncoding = true;
+            context.swf_encoding = encoding;
+        }
         header.parseXML(headerNode, &context);
         swf_size = header.getSize(&context, 0) / 8;
     }
