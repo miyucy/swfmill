@@ -1,25 +1,71 @@
 require "mkmf"
 
+def arg_include_exist?(target)
+  !!(arg_config("--with-#{target}-include") || arg_config("--with-#{target}-dir"))
+end
+
+def arg_include(target)
+  arg_config("--with-#{target}-include", arg_config("--with-#{target}-dir", "/usr") + "/include")
+end
+
+def arg_lib_exist?(target)
+  !!(arg_config("--with-#{target}-lib") || arg_config("--with-#{target}-dir"))
+end
+
+def arg_lib(target)
+  arg_config("--with-#{target}-lib", arg_config("--with-#{target}-dir", "/usr") + "/lib")
+end
+
 dir_config("freetype")
-$FREETYPE_CFLAGS = "-I" + File.join(arg_config("--with-freetype-include", arg_config("--with-freetype-dir", "/usr/include")), "freetype2")
-$FREETYPE_LIBS   = "-L" + arg_config("--with-freetype-lib", "/usr/lib") + " -lfreetype"
-$CFLAGS  += " " + $FREETYPE_CFLAGS
+if arg_include_exist?("freetype")
+  $FREETYPE_CFLAGS = "-I#{arg_include("freetype") + "/freetype2"}"
+  $CFLAGS += " #{$FREETYPE_CFLAGS}"
+end
+if arg_lib_exist?("freetype")
+  $FREETYPE_LIBS = "-L#{arg_lib("freetype")} -lfreetype"
+  $LDFLAGS += " -L#{arg_lib("freetype")}"
+  $libs += " -lfreetype"
+end
+unless $FREETYPE_CFLAGS and $FREETYPE_LIBS
+  $FREETYPE_CFLAGS, ldflags, libs = pkg_config("freetype2")
+  $FREETYPE_LIBS = "#{ldflags} #{libs}"
+end
 have_library("freetype")
 have_header("ft2build.h")
 
 dir_config("libxml2")
-$XML_CFLAGS = "-I" + File.join(arg_config("--with-libxml2-include", arg_config("--with-libxml2-dir", "/usr/include")), "libxml2")
-$XML_LIBS   = "-L" + arg_config("--with-libxml2-lib", "/usr/lib") + " -lxml2"
-$CFLAGS  += " " + $XML_CFLAGS
+if arg_include_exist?("libxml2")
+  $XML_CFLAGS = "-I#{arg_include("libxml2") + "/libxml2"}"
+  $CFLAGS += " #{$XML_CFLAGS}"
+end
+if arg_lib_exist?("libxml2")
+  $XML_LIBS = "-L#{arg_lib("libxml2")} -lxml2"
+  $LDFLAGS += " -L#{arg_lib("libxml2")}"
+  $libs += " -lxml2"
+end
+unless $XML_CFLAGS and $XML_LIBS
+  $XML_CFLAGS, ldflags, libs = pkg_config("libxml-2.0")
+  $XML_LIBS = "#{ldflags} #{libs}"
+end
 have_library("xml2")
 have_header("libxml/tree.h")
 have_header("libxml/uri.h")
 have_header("libxml/xpathInternals.h")
 
-dir_config("libxslt")
-$XSLT_CFLAGS = "-I" + File.join(arg_config("--with-libxslt-include", arg_config("--with-libxslt-dir", "/usr/include")), "libxml2")
-$XSLT_LIBS   = "-L" + arg_config("--with-libxslt-lib", "/usr/lib") + " -lexslt -lxslt"
-$CFLAGS  += " " + $XSLT_CFLAGS
+dir_config("libexslt")
+if arg_include_exist?("libexslt")
+  $XSLT_CFLAGS = "-I#{arg_include("libexslt") + "/libxml2"}"
+  $CFLAGS += " #{XSLT_CFLAGS}"
+end
+if arg_lib_exist?("libexslt")
+  $XSLT_LIBS = "-L#{arg_lib("libexslt")} -lexslt -lxslt -lxml2"
+  $LDFLAGS += " -L#{arg_lib("libexslt")}"
+  $libs += " -lexslt -lxslt -lxml2"
+end
+unless $XSLT_CFLAGS and $XSLT_LIBS
+  $XSLT_CFLAGS, ldflags, libs = pkg_config("libexslt")
+  $XSLT_LIBS = "#{ldflags} #{libs}"
+end
 have_library("exslt")
 have_library("xslt")
 have_header("libexslt/exslt.h")
@@ -29,9 +75,19 @@ have_header("libxslt/variables.h")
 have_header("libxslt/xsltutils.h")
 
 dir_config("libpng")
-$PNG_CFLAGS = "-I" + File.join(arg_config("--with-libpng-include", arg_config("--with-libpng-dir", "/usr/include")))
-$PNG_LIBS   = "-L" + arg_config("--with-libpng-lib", "/usr/lib") + " -lpng"
-$CFLAGS  += " " + $PNG_CFLAGS
+if arg_include_exist?("libpng")
+  $PNG_CFLAGS = "-I#{arg_include("libpng")}"
+  $CFLAGS += " #{$PNG_CFLAGS}"
+end
+if arg_lib_exist?("libpng")
+  $PNG_LIBS = "-L#{arg_lib("libpng")} -lpng"
+  $LDFLAGS += " -L#{arg_lib("libpng")}"
+  $libs += " -lpng"
+end
+unless $PNG_CFLAGS and $PNG_LIBS
+  $PNG_CFLAGS, ldflags, libs = pkg_config("libpng")
+  $PNG_LIBS = "#{ldflags} #{libs}"
+end
 have_library("png")
 have_header("png.h")
 
@@ -43,9 +99,6 @@ have_func("iconv", "iconv.h") or have_library("iconv", "iconv", "iconv.h")
 have_library("stdc++")
 
 $CFLAGS  += " -I./swfmill/src -I./swfmill/src/swft -I./swfmill/src/xslt"
-$LDFLAGS += " -L./swfmill/src/swft/.libs -lswft -L./swfmill/src/xslt/.libs -lswfmillxslt"
-
-create_makefile("swfmill_ext")
 
 Dir.chdir("swfmill") do
   cmd = "sh autogen.sh"
@@ -82,7 +135,29 @@ append_objs = ["swfmill-Geom.o",
                "swfmill-gSWFParser.o",
                "swfmill-gSWFSize.o",
                "swfmill-gSWFWriteXML.o",
-               "swfmill-gSWFWriter.o",]
-File.open(File.dirname(__FILE__) + "/Makefile", "ab") do |f|
-  f.puts "OBJS += " + append_objs.map{ |e| objs_prefix + e }.join(" ")
+               "swfmill-gSWFWriter.o",
+               "swft/libswft_la-Parser.o",
+               "swft/libswft_la-SVGAttributeParser.o",
+               "swft/libswft_la-SVGColor.o",
+               "swft/libswft_la-SVGGradient.o",
+               "swft/libswft_la-SVGPathParser.o",
+               "swft/libswft_la-SVGPointsParser.o",
+               "swft/libswft_la-SVGStyle.o",
+               "swft/libswft_la-SVGTransformParser.o",
+               "swft/libswft_la-readpng.o",
+               "swft/libswft_la-swft.o",
+               "swft/libswft_la-swft_document.o",
+               "swft/libswft_la-swft_import.o",
+               "swft/libswft_la-swft_import_binary.o",
+               "swft/libswft_la-swft_import_jpeg.o",
+               "swft/libswft_la-swft_import_mp3.o",
+               "swft/libswft_la-swft_import_png.o",
+               "swft/libswft_la-swft_import_ttf.o",
+               "swft/libswft_la-swft_import_wav.o",
+               "swft/libswft_la-swft_path.o",
+               "xslt/libswfmillxslt_la-simple.o",]
+
+create_makefile("swfmill_ext")
+File.open(File.dirname("__FILE__") + "/Makefile", "ab") do |f|
+  f.puts "OBJS += #{append_objs.map{ |e| objs_prefix + e }.join(" ")}"
 end
