@@ -3,3 +3,4 @@ mkmf.log
 
 *.o
 *.so
+!test/Makefile
