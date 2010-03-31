@@ -2,7 +2,7 @@
 #include "ruby.h"
 #include "SWF.h"
 #include "SWFWriter.h"
-#include "swfmill_ext_deflate.h"
+#include "deflate.h"
 
 extern VALUE rb_eSwfmill_Error;
 extern VALUE rb_eSwfmill_EOFError;
@@ -172,14 +172,17 @@ VALUE swfmill_ext_to_swf(int argc, VALUE *argv, VALUE self)
 
     if(compressed)
     {
-        int new_size = swfmill_ext_deflate(swf_buff, swf_size, compress_level);
-        if(new_size == 0)
+        Deflate deflate(swf_buff, swf_size, compress_level);
+        if(!deflate.compress())
         {
             ruby_xfree(swf_buff);
             xmlFreeDoc(doc);
-            rb_raise(rb_eSwfmill_Error, "Error compressing SWF");
+            rb_raise(rb_eSwfmill_Error, "Error compressing SWF: %s", deflate.error());
         }
-        swf_size = new_size;
+        ruby_xfree(swf_buff);
+        swf_size = deflate.size();
+        swf_buff = (unsigned char*)ruby_xmalloc(swf_size);
+        memcpy(swf_buff, deflate.data(), swf_size);
     }
 
     VALUE swf;
