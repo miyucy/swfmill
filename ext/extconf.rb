@@ -101,10 +101,8 @@ have_library("stdc++")
 $CFLAGS  += " -I./swfmill/src -I./swfmill/src/swft -I./swfmill/src/xslt"
 
 Dir.chdir("swfmill") do
-  cmd = "sh autogen.sh"
-  raise "error: #{cmd}" unless system(cmd)
   cmd = <<CMD
-sh configure --disable-dependency-tracking \
+sh configure --config-cache --disable-dependency-tracking \
 FREETYPE_CFLAGS="#{$FREETYPE_CFLAGS}" FREETYPE_LIBS="#{$FREETYPE_LIBS}" \
 XML_CFLAGS="#{$XML_CFLAGS}" XML_LIBS="#{$XML_LIBS}" \
 XSLT_CFLAGS="#{$XSLT_CFLAGS}" XSLT_LIBS="#{$XSLT_LIBS}" \
@@ -115,49 +113,7 @@ CMD
   raise "error: #{cmd}" unless system(cmd)
 end
 
-objs_prefix = "swfmill/src/"
-append_objs = ["swfmill-Geom.o",
-               "swfmill-SWFAction.o",
-               "swfmill-SWFFile.o",
-               "swfmill-SWFFilter.o",
-               "swfmill-SWFGlyphList.o",
-               "swfmill-SWFItem.o",
-               "swfmill-SWFReader.o",
-               "swfmill-SWFShapeItem.o",
-               "swfmill-SWFShapeMaker.o",
-               "swfmill-SWFTag.o",
-               "swfmill-SWFTrait.o",
-               "swfmill-SWFWriter.o",
-               "swfmill-base64.o",
-               "swfmill-gSWFBasics.o",
-               "swfmill-gSWFDumper.o",
-               "swfmill-gSWFParseXML.o",
-               "swfmill-gSWFParser.o",
-               "swfmill-gSWFSize.o",
-               "swfmill-gSWFWriteXML.o",
-               "swfmill-gSWFWriter.o",
-               "swft/libswft_la-Parser.o",
-               "swft/libswft_la-SVGAttributeParser.o",
-               "swft/libswft_la-SVGColor.o",
-               "swft/libswft_la-SVGGradient.o",
-               "swft/libswft_la-SVGPathParser.o",
-               "swft/libswft_la-SVGPointsParser.o",
-               "swft/libswft_la-SVGStyle.o",
-               "swft/libswft_la-SVGTransformParser.o",
-               "swft/libswft_la-readpng.o",
-               "swft/libswft_la-swft.o",
-               "swft/libswft_la-swft_document.o",
-               "swft/libswft_la-swft_import.o",
-               "swft/libswft_la-swft_import_binary.o",
-               "swft/libswft_la-swft_import_jpeg.o",
-               "swft/libswft_la-swft_import_mp3.o",
-               "swft/libswft_la-swft_import_png.o",
-               "swft/libswft_la-swft_import_ttf.o",
-               "swft/libswft_la-swft_import_wav.o",
-               "swft/libswft_la-swft_path.o",
-               "xslt/libswfmillxslt_la-simple.o",]
-
 create_makefile("swfmill_ext")
 File.open(File.dirname("__FILE__") + "/Makefile", "ab") do |f|
-  f.puts "OBJS += #{append_objs.map{ |e| objs_prefix + e }.join(" ")}"
+  f.puts "OBJS += #{Dir["swfmill/src/**/*.o"].join(" ")}"
 end

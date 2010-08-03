@@ -51,6 +51,7 @@ file 'lib/swfmill_ext.so' => FileList['ext/extconf.rb', 'ext/Makefile', 'ext/*.c
     sh 'make'
   end
   sh 'mv ext/swfmill_ext.so lib/swfmill_ext.so'
+  sh 'strip lib/swfmill_ext.so'
 end
 file 'ext/Makefile' => 'ext/extconf.rb' do
   Dir.chdir('ext') do

@@ -47,7 +47,21 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am__objects_1 =
-am_swfmill_OBJECTS = swfmill-base64.$(OBJEXT) swfmill-Geom.$(OBJEXT) \
+am_swfmill_OBJECTS = swfmill-swft.$(OBJEXT) \
+	swfmill-swft_document.$(OBJEXT) swfmill-swft_path.$(OBJEXT) \
+	swfmill-swft_import.$(OBJEXT) \
+	swfmill-swft_import_jpeg.$(OBJEXT) \
+	swfmill-swft_import_png.$(OBJEXT) \
+	swfmill-swft_import_ttf.$(OBJEXT) \
+	swfmill-swft_import_mp3.$(OBJEXT) \
+	swfmill-swft_import_wav.$(OBJEXT) \
+	swfmill-swft_import_binary.$(OBJEXT) swfmill-Parser.$(OBJEXT) \
+	swfmill-SVGStyle.$(OBJEXT) swfmill-SVGGradient.$(OBJEXT) \
+	swfmill-SVGColor.$(OBJEXT) swfmill-SVGPathParser.$(OBJEXT) \
+	swfmill-SVGPointsParser.$(OBJEXT) \
+	swfmill-SVGTransformParser.$(OBJEXT) \
+	swfmill-SVGAttributeParser.$(OBJEXT) swfmill-readpng.$(OBJEXT) \
+	swfmill-base64.$(OBJEXT) swfmill-Geom.$(OBJEXT) \
 	swfmill-SWFReader.$(OBJEXT) swfmill-SWFWriter.$(OBJEXT) \
 	swfmill-SWFFile.$(OBJEXT) swfmill-SWFItem.$(OBJEXT) \
 	swfmill-SWFTag.$(OBJEXT) swfmill-SWFAction.$(OBJEXT) \
@@ -60,11 +74,14 @@ am__objects_2 = swfmill-gSWFParseXML.$(OBJEXT) \
 	swfmill-gSWFWriter.$(OBJEXT) swfmill-gSWFDumper.$(OBJEXT) \
 	swfmill-gSWFBasics.$(OBJEXT) swfmill-gSWFSize.$(OBJEXT) \
 	$(am__objects_1)
-nodist_swfmill_OBJECTS = $(am__objects_2)
+am__objects_3 = swfmill-simple.$(OBJEXT) $(am__objects_1)
+nodist_swfmill_OBJECTS = $(am__objects_2) $(am__objects_3) \
+	$(am__objects_1)
 swfmill_OBJECTS = $(am_swfmill_OBJECTS) $(nodist_swfmill_OBJECTS)
 am__DEPENDENCIES_1 =
 swfmill_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	swft/libswft.la xslt/libswfmillxslt.la
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 swfmill_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(swfmill_CXXFLAGS) $(CXXFLAGS) \
 	$(swfmill_LDFLAGS) $(LDFLAGS) -o $@
@@ -91,19 +108,9 @@ CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	$(LDFLAGS) -o $@
 SOURCES = $(swfmill_SOURCES) $(nodist_swfmill_SOURCES)
 DIST_SOURCES = $(swfmill_SOURCES)
-RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
-	html-recursive info-recursive install-data-recursive \
-	install-dvi-recursive install-exec-recursive \
-	install-html-recursive install-info-recursive \
-	install-pdf-recursive install-ps-recursive install-recursive \
-	installcheck-recursive installdirs-recursive pdf-recursive \
-	ps-recursive uninstall-recursive
 HEADERS = $(noinst_HEADERS)
-RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
-  distclean-recursive maintainer-clean-recursive
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = $(SUBDIRS)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -131,12 +138,13 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+EXSLT_CFLAGS = @EXSLT_CFLAGS@
+EXSLT_LIBS = @EXSLT_LIBS@
 F77 = @F77@
 FFLAGS = @FFLAGS@
 FREETYPE_CFLAGS = @FREETYPE_CFLAGS@
 FREETYPE_LIBS = @FREETYPE_LIBS@
 GREP = @GREP@
-HAVE_PKGCONFIG = @HAVE_PKGCONFIG@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -225,19 +233,22 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 NULL = 
 MAINTAINERCLEANFILES = Makefile.in
-@IS_OSX_TRUE@ADDCFLAGS = -DLIBXML_STATIC -DLIBXSLT_STATIC -DLIBEXSLT_STATIC
 @IS_WINDOWS_TRUE@ADDCFLAGS = -DLIBXML_STATIC -DLIBXSLT_STATIC -DLIBEXSLT_STATIC
-@IS_OSX_TRUE@ADDLDFLAGS = -all-static
 @IS_WINDOWS_TRUE@ADDLDFLAGS = -all-static
-swfmill_CFLAGS = $(XML_CFLAGS) $(XSLT_CFLAGS) $(ADDCFLAGS) -I$(srcdir)/swft/ -I$(srcdir)/xslt/
+swfmill_CFLAGS = $(XML_CFLAGS) $(XSLT_CFLAGS) $(EXSLT_CFLAGS) \
+	$(FREETYPE_CFLAGS) $(PNG_CFLAGS) $(ADDCFLAGS) \
+	-I$(srcdir)/swft/ -I$(srcdir)/xslt/
+
 swfmill_CXXFLAGS = $(swfmill_CFLAGS)
-swfmill_LDADD = $(XML_LIBS) $(XSLT_LIBS) swft/libswft.la xslt/libswfmillxslt.la
+swfmill_LDADD = $(XML_LIBS) $(XSLT_LIBS) $(EXSLT_LIBS) $(FREETYPE_LIBS) \
+	$(PNG_LIBS)
+
 swfmill_LDFLAGS = $(ADDLDFLAGS)
-BUILT_SOURCES = \
+CODEGEN_GENERATEDHEADERS = \
 	SWF.h \
 	$(NULL)
 
-GENERATED_FILES = \
+CODEGEN_GENERATEDSOURCES = \
 	gSWFParseXML.cpp \
 	gSWFWriteXML.cpp \
 	gSWFParser.cpp \
@@ -247,7 +258,65 @@ GENERATED_FILES = \
 	gSWFSize.cpp \
 	$(NULL)
 
+SIMPLE_DIALECT_GENERATEDSOURCES = \
+	xslt/simple.cpp \
+	$(NULL)
+
+SIMPLE_DIALECT_XSLTS = \
+	xslt/simple-tools.xslt \
+	xslt/simple-elements.xslt \
+	xslt/simple-import.xslt \
+	xslt/simple-deprecated.xslt \
+	xslt/simple-svg.xslt \
+	$(NULL)
+
+EXTRA_DIST = \
+	codegen/basic.xsl \
+	codegen/basics.xsl \
+	codegen/dumper.xsl \
+	codegen/header.xsl \
+	codegen/mk.xsl \
+	codegen/parser.xsl \
+	codegen/parsexml.xsl \
+	codegen/size.xsl \
+	codegen/source.xml \
+	codegen/writer.xsl \
+	codegen/writexml.xsl \
+	\
+	xslt/assemble.xsl \
+	xslt/simple.xml \
+	$(SIMPLE_DIALECT_XSLTS) \
+	$(NULL)
+
+BUILT_SOURCES = \
+	$(CODEGEN_GENERATEDHEADERS) \
+	$(NULL)
+
+NAMESPACES = xmlns:swft=\"http:\/\/subsignal.org\/swfml\/swft\" \
+			 xmlns:str=\"http:\/\/exslt.org\/strings\" \
+			 xmlns:math=\"http:\/\/exslt.org\/math\"
+
 swfmill_SOURCES = \
+	swft/swft.cpp \
+	swft/swft_document.cpp \
+	swft/swft_path.cpp \
+	swft/swft_import.cpp \
+	swft/swft_import_jpeg.cpp \
+	swft/swft_import_png.cpp \
+	swft/swft_import_ttf.cpp \
+	swft/swft_import_mp3.cpp \
+	swft/swft_import_wav.cpp \
+	swft/swft_import_binary.cpp \
+	swft/Parser.cpp \
+	swft/SVGStyle.cpp \
+	swft/SVGGradient.cpp \
+	swft/SVGColor.cpp \
+	swft/SVGPathParser.cpp \
+	swft/SVGPointsParser.cpp \
+	swft/SVGTransformParser.cpp \
+	swft/SVGAttributeParser.cpp \
+	swft/readpng.c \
+	\
 	base64.c \
 	Geom.cpp \
 	SWFReader.cpp \
@@ -265,8 +334,24 @@ swfmill_SOURCES = \
 	swfmill.cpp \
 	$(NULL)
 
-nodist_swfmill_SOURCES = $(GENERATED_FILES)
+nodist_swfmill_SOURCES = \
+	$(CODEGEN_GENERATEDSOURCES) \
+	$(SIMPLE_DIALECT_GENERATEDSOURCES) \
+	$(NULL)
+
 noinst_HEADERS = \
+	swft/swft.h \
+	swft/Parser.h \
+	swft/SVGStyle.h \
+	swft/SVGGradient.h \
+	swft/SVGColor.h \
+	swft/SVGColors.h \
+	swft/SVGPathParser.h \
+	swft/SVGPointsParser.h \
+	swft/SVGTransformParser.h \
+	swft/SVGAttributeParser.h \
+	swft/readpng.h \
+	\
 	base64.h \
 	Geom.h \
 	SWFBasic.h \
@@ -287,15 +372,11 @@ noinst_HEADERS = \
 	SWF.h \
 	$(NULL)
 
-SUBDIRS = \
-	swft \
-	xslt \
-	codegen \
-	$(NULL)
+CLEANFILES = $(CODEGEN_GENERATEDHEADERS) $(CODEGEN_GENERATEDSOURCES) \
+	$(SIMPLE_DIALECT_GENERATEDSOURCES)
 
-CLEANFILES = $(BUILT_SOURCES) $(GENERATED_FILES)
 all: $(BUILT_SOURCES)
-	$(MAKE) $(AM_MAKEFLAGS) all-recursive
+	$(MAKE) $(AM_MAKEFLAGS) all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .cpp .lo .o .obj
@@ -367,6 +448,14 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swfmill-Geom.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swfmill-Parser.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swfmill-SVGAttributeParser.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swfmill-SVGColor.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swfmill-SVGGradient.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swfmill-SVGPathParser.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swfmill-SVGPointsParser.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swfmill-SVGStyle.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swfmill-SVGTransformParser.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swfmill-SWFAction.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swfmill-SWFFile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swfmill-SWFFilter.Po@am__quote@
@@ -386,7 +475,19 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swfmill-gSWFSize.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swfmill-gSWFWriteXML.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swfmill-gSWFWriter.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swfmill-readpng.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swfmill-simple.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swfmill-swfmill.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swfmill-swft.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swfmill-swft_document.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swfmill-swft_import.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swfmill-swft_import_binary.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swfmill-swft_import_jpeg.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swfmill-swft_import_mp3.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swfmill-swft_import_png.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swfmill-swft_import_ttf.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swfmill-swft_import_wav.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swfmill-swft_path.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -408,6 +509,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
+
+swfmill-readpng.o: swft/readpng.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CFLAGS) $(CFLAGS) -MT swfmill-readpng.o -MD -MP -MF $(DEPDIR)/swfmill-readpng.Tpo -c -o swfmill-readpng.o `test -f 'swft/readpng.c' || echo '$(srcdir)/'`swft/readpng.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/swfmill-readpng.Tpo $(DEPDIR)/swfmill-readpng.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='swft/readpng.c' object='swfmill-readpng.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CFLAGS) $(CFLAGS) -c -o swfmill-readpng.o `test -f 'swft/readpng.c' || echo '$(srcdir)/'`swft/readpng.c
+
+swfmill-readpng.obj: swft/readpng.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CFLAGS) $(CFLAGS) -MT swfmill-readpng.obj -MD -MP -MF $(DEPDIR)/swfmill-readpng.Tpo -c -o swfmill-readpng.obj `if test -f 'swft/readpng.c'; then $(CYGPATH_W) 'swft/readpng.c'; else $(CYGPATH_W) '$(srcdir)/swft/readpng.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/swfmill-readpng.Tpo $(DEPDIR)/swfmill-readpng.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='swft/readpng.c' object='swfmill-readpng.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CFLAGS) $(CFLAGS) -c -o swfmill-readpng.obj `if test -f 'swft/readpng.c'; then $(CYGPATH_W) 'swft/readpng.c'; else $(CYGPATH_W) '$(srcdir)/swft/readpng.c'; fi`
 
 swfmill-base64.o: base64.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CFLAGS) $(CFLAGS) -MT swfmill-base64.o -MD -MP -MF $(DEPDIR)/swfmill-base64.Tpo -c -o swfmill-base64.o `test -f 'base64.c' || echo '$(srcdir)/'`base64.c
@@ -443,6 +558,258 @@ swfmill-base64.obj: base64.c
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
+
+swfmill-swft.o: swft/swft.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-swft.o -MD -MP -MF $(DEPDIR)/swfmill-swft.Tpo -c -o swfmill-swft.o `test -f 'swft/swft.cpp' || echo '$(srcdir)/'`swft/swft.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-swft.Tpo $(DEPDIR)/swfmill-swft.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/swft.cpp' object='swfmill-swft.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-swft.o `test -f 'swft/swft.cpp' || echo '$(srcdir)/'`swft/swft.cpp
+
+swfmill-swft.obj: swft/swft.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-swft.obj -MD -MP -MF $(DEPDIR)/swfmill-swft.Tpo -c -o swfmill-swft.obj `if test -f 'swft/swft.cpp'; then $(CYGPATH_W) 'swft/swft.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/swft.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-swft.Tpo $(DEPDIR)/swfmill-swft.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/swft.cpp' object='swfmill-swft.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-swft.obj `if test -f 'swft/swft.cpp'; then $(CYGPATH_W) 'swft/swft.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/swft.cpp'; fi`
+
+swfmill-swft_document.o: swft/swft_document.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-swft_document.o -MD -MP -MF $(DEPDIR)/swfmill-swft_document.Tpo -c -o swfmill-swft_document.o `test -f 'swft/swft_document.cpp' || echo '$(srcdir)/'`swft/swft_document.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-swft_document.Tpo $(DEPDIR)/swfmill-swft_document.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/swft_document.cpp' object='swfmill-swft_document.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-swft_document.o `test -f 'swft/swft_document.cpp' || echo '$(srcdir)/'`swft/swft_document.cpp
+
+swfmill-swft_document.obj: swft/swft_document.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-swft_document.obj -MD -MP -MF $(DEPDIR)/swfmill-swft_document.Tpo -c -o swfmill-swft_document.obj `if test -f 'swft/swft_document.cpp'; then $(CYGPATH_W) 'swft/swft_document.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/swft_document.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-swft_document.Tpo $(DEPDIR)/swfmill-swft_document.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/swft_document.cpp' object='swfmill-swft_document.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-swft_document.obj `if test -f 'swft/swft_document.cpp'; then $(CYGPATH_W) 'swft/swft_document.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/swft_document.cpp'; fi`
+
+swfmill-swft_path.o: swft/swft_path.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-swft_path.o -MD -MP -MF $(DEPDIR)/swfmill-swft_path.Tpo -c -o swfmill-swft_path.o `test -f 'swft/swft_path.cpp' || echo '$(srcdir)/'`swft/swft_path.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-swft_path.Tpo $(DEPDIR)/swfmill-swft_path.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/swft_path.cpp' object='swfmill-swft_path.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-swft_path.o `test -f 'swft/swft_path.cpp' || echo '$(srcdir)/'`swft/swft_path.cpp
+
+swfmill-swft_path.obj: swft/swft_path.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-swft_path.obj -MD -MP -MF $(DEPDIR)/swfmill-swft_path.Tpo -c -o swfmill-swft_path.obj `if test -f 'swft/swft_path.cpp'; then $(CYGPATH_W) 'swft/swft_path.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/swft_path.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-swft_path.Tpo $(DEPDIR)/swfmill-swft_path.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/swft_path.cpp' object='swfmill-swft_path.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-swft_path.obj `if test -f 'swft/swft_path.cpp'; then $(CYGPATH_W) 'swft/swft_path.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/swft_path.cpp'; fi`
+
+swfmill-swft_import.o: swft/swft_import.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-swft_import.o -MD -MP -MF $(DEPDIR)/swfmill-swft_import.Tpo -c -o swfmill-swft_import.o `test -f 'swft/swft_import.cpp' || echo '$(srcdir)/'`swft/swft_import.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-swft_import.Tpo $(DEPDIR)/swfmill-swft_import.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/swft_import.cpp' object='swfmill-swft_import.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-swft_import.o `test -f 'swft/swft_import.cpp' || echo '$(srcdir)/'`swft/swft_import.cpp
+
+swfmill-swft_import.obj: swft/swft_import.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-swft_import.obj -MD -MP -MF $(DEPDIR)/swfmill-swft_import.Tpo -c -o swfmill-swft_import.obj `if test -f 'swft/swft_import.cpp'; then $(CYGPATH_W) 'swft/swft_import.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/swft_import.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-swft_import.Tpo $(DEPDIR)/swfmill-swft_import.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/swft_import.cpp' object='swfmill-swft_import.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-swft_import.obj `if test -f 'swft/swft_import.cpp'; then $(CYGPATH_W) 'swft/swft_import.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/swft_import.cpp'; fi`
+
+swfmill-swft_import_jpeg.o: swft/swft_import_jpeg.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-swft_import_jpeg.o -MD -MP -MF $(DEPDIR)/swfmill-swft_import_jpeg.Tpo -c -o swfmill-swft_import_jpeg.o `test -f 'swft/swft_import_jpeg.cpp' || echo '$(srcdir)/'`swft/swft_import_jpeg.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-swft_import_jpeg.Tpo $(DEPDIR)/swfmill-swft_import_jpeg.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/swft_import_jpeg.cpp' object='swfmill-swft_import_jpeg.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-swft_import_jpeg.o `test -f 'swft/swft_import_jpeg.cpp' || echo '$(srcdir)/'`swft/swft_import_jpeg.cpp
+
+swfmill-swft_import_jpeg.obj: swft/swft_import_jpeg.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-swft_import_jpeg.obj -MD -MP -MF $(DEPDIR)/swfmill-swft_import_jpeg.Tpo -c -o swfmill-swft_import_jpeg.obj `if test -f 'swft/swft_import_jpeg.cpp'; then $(CYGPATH_W) 'swft/swft_import_jpeg.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/swft_import_jpeg.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-swft_import_jpeg.Tpo $(DEPDIR)/swfmill-swft_import_jpeg.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/swft_import_jpeg.cpp' object='swfmill-swft_import_jpeg.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-swft_import_jpeg.obj `if test -f 'swft/swft_import_jpeg.cpp'; then $(CYGPATH_W) 'swft/swft_import_jpeg.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/swft_import_jpeg.cpp'; fi`
+
+swfmill-swft_import_png.o: swft/swft_import_png.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-swft_import_png.o -MD -MP -MF $(DEPDIR)/swfmill-swft_import_png.Tpo -c -o swfmill-swft_import_png.o `test -f 'swft/swft_import_png.cpp' || echo '$(srcdir)/'`swft/swft_import_png.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-swft_import_png.Tpo $(DEPDIR)/swfmill-swft_import_png.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/swft_import_png.cpp' object='swfmill-swft_import_png.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-swft_import_png.o `test -f 'swft/swft_import_png.cpp' || echo '$(srcdir)/'`swft/swft_import_png.cpp
+
+swfmill-swft_import_png.obj: swft/swft_import_png.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-swft_import_png.obj -MD -MP -MF $(DEPDIR)/swfmill-swft_import_png.Tpo -c -o swfmill-swft_import_png.obj `if test -f 'swft/swft_import_png.cpp'; then $(CYGPATH_W) 'swft/swft_import_png.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/swft_import_png.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-swft_import_png.Tpo $(DEPDIR)/swfmill-swft_import_png.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/swft_import_png.cpp' object='swfmill-swft_import_png.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-swft_import_png.obj `if test -f 'swft/swft_import_png.cpp'; then $(CYGPATH_W) 'swft/swft_import_png.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/swft_import_png.cpp'; fi`
+
+swfmill-swft_import_ttf.o: swft/swft_import_ttf.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-swft_import_ttf.o -MD -MP -MF $(DEPDIR)/swfmill-swft_import_ttf.Tpo -c -o swfmill-swft_import_ttf.o `test -f 'swft/swft_import_ttf.cpp' || echo '$(srcdir)/'`swft/swft_import_ttf.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-swft_import_ttf.Tpo $(DEPDIR)/swfmill-swft_import_ttf.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/swft_import_ttf.cpp' object='swfmill-swft_import_ttf.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-swft_import_ttf.o `test -f 'swft/swft_import_ttf.cpp' || echo '$(srcdir)/'`swft/swft_import_ttf.cpp
+
+swfmill-swft_import_ttf.obj: swft/swft_import_ttf.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-swft_import_ttf.obj -MD -MP -MF $(DEPDIR)/swfmill-swft_import_ttf.Tpo -c -o swfmill-swft_import_ttf.obj `if test -f 'swft/swft_import_ttf.cpp'; then $(CYGPATH_W) 'swft/swft_import_ttf.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/swft_import_ttf.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-swft_import_ttf.Tpo $(DEPDIR)/swfmill-swft_import_ttf.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/swft_import_ttf.cpp' object='swfmill-swft_import_ttf.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-swft_import_ttf.obj `if test -f 'swft/swft_import_ttf.cpp'; then $(CYGPATH_W) 'swft/swft_import_ttf.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/swft_import_ttf.cpp'; fi`
+
+swfmill-swft_import_mp3.o: swft/swft_import_mp3.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-swft_import_mp3.o -MD -MP -MF $(DEPDIR)/swfmill-swft_import_mp3.Tpo -c -o swfmill-swft_import_mp3.o `test -f 'swft/swft_import_mp3.cpp' || echo '$(srcdir)/'`swft/swft_import_mp3.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-swft_import_mp3.Tpo $(DEPDIR)/swfmill-swft_import_mp3.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/swft_import_mp3.cpp' object='swfmill-swft_import_mp3.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-swft_import_mp3.o `test -f 'swft/swft_import_mp3.cpp' || echo '$(srcdir)/'`swft/swft_import_mp3.cpp
+
+swfmill-swft_import_mp3.obj: swft/swft_import_mp3.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-swft_import_mp3.obj -MD -MP -MF $(DEPDIR)/swfmill-swft_import_mp3.Tpo -c -o swfmill-swft_import_mp3.obj `if test -f 'swft/swft_import_mp3.cpp'; then $(CYGPATH_W) 'swft/swft_import_mp3.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/swft_import_mp3.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-swft_import_mp3.Tpo $(DEPDIR)/swfmill-swft_import_mp3.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/swft_import_mp3.cpp' object='swfmill-swft_import_mp3.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-swft_import_mp3.obj `if test -f 'swft/swft_import_mp3.cpp'; then $(CYGPATH_W) 'swft/swft_import_mp3.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/swft_import_mp3.cpp'; fi`
+
+swfmill-swft_import_wav.o: swft/swft_import_wav.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-swft_import_wav.o -MD -MP -MF $(DEPDIR)/swfmill-swft_import_wav.Tpo -c -o swfmill-swft_import_wav.o `test -f 'swft/swft_import_wav.cpp' || echo '$(srcdir)/'`swft/swft_import_wav.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-swft_import_wav.Tpo $(DEPDIR)/swfmill-swft_import_wav.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/swft_import_wav.cpp' object='swfmill-swft_import_wav.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-swft_import_wav.o `test -f 'swft/swft_import_wav.cpp' || echo '$(srcdir)/'`swft/swft_import_wav.cpp
+
+swfmill-swft_import_wav.obj: swft/swft_import_wav.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-swft_import_wav.obj -MD -MP -MF $(DEPDIR)/swfmill-swft_import_wav.Tpo -c -o swfmill-swft_import_wav.obj `if test -f 'swft/swft_import_wav.cpp'; then $(CYGPATH_W) 'swft/swft_import_wav.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/swft_import_wav.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-swft_import_wav.Tpo $(DEPDIR)/swfmill-swft_import_wav.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/swft_import_wav.cpp' object='swfmill-swft_import_wav.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-swft_import_wav.obj `if test -f 'swft/swft_import_wav.cpp'; then $(CYGPATH_W) 'swft/swft_import_wav.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/swft_import_wav.cpp'; fi`
+
+swfmill-swft_import_binary.o: swft/swft_import_binary.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-swft_import_binary.o -MD -MP -MF $(DEPDIR)/swfmill-swft_import_binary.Tpo -c -o swfmill-swft_import_binary.o `test -f 'swft/swft_import_binary.cpp' || echo '$(srcdir)/'`swft/swft_import_binary.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-swft_import_binary.Tpo $(DEPDIR)/swfmill-swft_import_binary.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/swft_import_binary.cpp' object='swfmill-swft_import_binary.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-swft_import_binary.o `test -f 'swft/swft_import_binary.cpp' || echo '$(srcdir)/'`swft/swft_import_binary.cpp
+
+swfmill-swft_import_binary.obj: swft/swft_import_binary.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-swft_import_binary.obj -MD -MP -MF $(DEPDIR)/swfmill-swft_import_binary.Tpo -c -o swfmill-swft_import_binary.obj `if test -f 'swft/swft_import_binary.cpp'; then $(CYGPATH_W) 'swft/swft_import_binary.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/swft_import_binary.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-swft_import_binary.Tpo $(DEPDIR)/swfmill-swft_import_binary.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/swft_import_binary.cpp' object='swfmill-swft_import_binary.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-swft_import_binary.obj `if test -f 'swft/swft_import_binary.cpp'; then $(CYGPATH_W) 'swft/swft_import_binary.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/swft_import_binary.cpp'; fi`
+
+swfmill-Parser.o: swft/Parser.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-Parser.o -MD -MP -MF $(DEPDIR)/swfmill-Parser.Tpo -c -o swfmill-Parser.o `test -f 'swft/Parser.cpp' || echo '$(srcdir)/'`swft/Parser.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-Parser.Tpo $(DEPDIR)/swfmill-Parser.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/Parser.cpp' object='swfmill-Parser.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-Parser.o `test -f 'swft/Parser.cpp' || echo '$(srcdir)/'`swft/Parser.cpp
+
+swfmill-Parser.obj: swft/Parser.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-Parser.obj -MD -MP -MF $(DEPDIR)/swfmill-Parser.Tpo -c -o swfmill-Parser.obj `if test -f 'swft/Parser.cpp'; then $(CYGPATH_W) 'swft/Parser.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/Parser.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-Parser.Tpo $(DEPDIR)/swfmill-Parser.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/Parser.cpp' object='swfmill-Parser.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-Parser.obj `if test -f 'swft/Parser.cpp'; then $(CYGPATH_W) 'swft/Parser.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/Parser.cpp'; fi`
+
+swfmill-SVGStyle.o: swft/SVGStyle.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-SVGStyle.o -MD -MP -MF $(DEPDIR)/swfmill-SVGStyle.Tpo -c -o swfmill-SVGStyle.o `test -f 'swft/SVGStyle.cpp' || echo '$(srcdir)/'`swft/SVGStyle.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-SVGStyle.Tpo $(DEPDIR)/swfmill-SVGStyle.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/SVGStyle.cpp' object='swfmill-SVGStyle.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-SVGStyle.o `test -f 'swft/SVGStyle.cpp' || echo '$(srcdir)/'`swft/SVGStyle.cpp
+
+swfmill-SVGStyle.obj: swft/SVGStyle.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-SVGStyle.obj -MD -MP -MF $(DEPDIR)/swfmill-SVGStyle.Tpo -c -o swfmill-SVGStyle.obj `if test -f 'swft/SVGStyle.cpp'; then $(CYGPATH_W) 'swft/SVGStyle.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/SVGStyle.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-SVGStyle.Tpo $(DEPDIR)/swfmill-SVGStyle.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/SVGStyle.cpp' object='swfmill-SVGStyle.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-SVGStyle.obj `if test -f 'swft/SVGStyle.cpp'; then $(CYGPATH_W) 'swft/SVGStyle.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/SVGStyle.cpp'; fi`
+
+swfmill-SVGGradient.o: swft/SVGGradient.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-SVGGradient.o -MD -MP -MF $(DEPDIR)/swfmill-SVGGradient.Tpo -c -o swfmill-SVGGradient.o `test -f 'swft/SVGGradient.cpp' || echo '$(srcdir)/'`swft/SVGGradient.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-SVGGradient.Tpo $(DEPDIR)/swfmill-SVGGradient.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/SVGGradient.cpp' object='swfmill-SVGGradient.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-SVGGradient.o `test -f 'swft/SVGGradient.cpp' || echo '$(srcdir)/'`swft/SVGGradient.cpp
+
+swfmill-SVGGradient.obj: swft/SVGGradient.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-SVGGradient.obj -MD -MP -MF $(DEPDIR)/swfmill-SVGGradient.Tpo -c -o swfmill-SVGGradient.obj `if test -f 'swft/SVGGradient.cpp'; then $(CYGPATH_W) 'swft/SVGGradient.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/SVGGradient.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-SVGGradient.Tpo $(DEPDIR)/swfmill-SVGGradient.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/SVGGradient.cpp' object='swfmill-SVGGradient.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-SVGGradient.obj `if test -f 'swft/SVGGradient.cpp'; then $(CYGPATH_W) 'swft/SVGGradient.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/SVGGradient.cpp'; fi`
+
+swfmill-SVGColor.o: swft/SVGColor.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-SVGColor.o -MD -MP -MF $(DEPDIR)/swfmill-SVGColor.Tpo -c -o swfmill-SVGColor.o `test -f 'swft/SVGColor.cpp' || echo '$(srcdir)/'`swft/SVGColor.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-SVGColor.Tpo $(DEPDIR)/swfmill-SVGColor.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/SVGColor.cpp' object='swfmill-SVGColor.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-SVGColor.o `test -f 'swft/SVGColor.cpp' || echo '$(srcdir)/'`swft/SVGColor.cpp
+
+swfmill-SVGColor.obj: swft/SVGColor.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-SVGColor.obj -MD -MP -MF $(DEPDIR)/swfmill-SVGColor.Tpo -c -o swfmill-SVGColor.obj `if test -f 'swft/SVGColor.cpp'; then $(CYGPATH_W) 'swft/SVGColor.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/SVGColor.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-SVGColor.Tpo $(DEPDIR)/swfmill-SVGColor.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/SVGColor.cpp' object='swfmill-SVGColor.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-SVGColor.obj `if test -f 'swft/SVGColor.cpp'; then $(CYGPATH_W) 'swft/SVGColor.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/SVGColor.cpp'; fi`
+
+swfmill-SVGPathParser.o: swft/SVGPathParser.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-SVGPathParser.o -MD -MP -MF $(DEPDIR)/swfmill-SVGPathParser.Tpo -c -o swfmill-SVGPathParser.o `test -f 'swft/SVGPathParser.cpp' || echo '$(srcdir)/'`swft/SVGPathParser.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-SVGPathParser.Tpo $(DEPDIR)/swfmill-SVGPathParser.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/SVGPathParser.cpp' object='swfmill-SVGPathParser.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-SVGPathParser.o `test -f 'swft/SVGPathParser.cpp' || echo '$(srcdir)/'`swft/SVGPathParser.cpp
+
+swfmill-SVGPathParser.obj: swft/SVGPathParser.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-SVGPathParser.obj -MD -MP -MF $(DEPDIR)/swfmill-SVGPathParser.Tpo -c -o swfmill-SVGPathParser.obj `if test -f 'swft/SVGPathParser.cpp'; then $(CYGPATH_W) 'swft/SVGPathParser.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/SVGPathParser.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-SVGPathParser.Tpo $(DEPDIR)/swfmill-SVGPathParser.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/SVGPathParser.cpp' object='swfmill-SVGPathParser.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-SVGPathParser.obj `if test -f 'swft/SVGPathParser.cpp'; then $(CYGPATH_W) 'swft/SVGPathParser.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/SVGPathParser.cpp'; fi`
+
+swfmill-SVGPointsParser.o: swft/SVGPointsParser.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-SVGPointsParser.o -MD -MP -MF $(DEPDIR)/swfmill-SVGPointsParser.Tpo -c -o swfmill-SVGPointsParser.o `test -f 'swft/SVGPointsParser.cpp' || echo '$(srcdir)/'`swft/SVGPointsParser.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-SVGPointsParser.Tpo $(DEPDIR)/swfmill-SVGPointsParser.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/SVGPointsParser.cpp' object='swfmill-SVGPointsParser.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-SVGPointsParser.o `test -f 'swft/SVGPointsParser.cpp' || echo '$(srcdir)/'`swft/SVGPointsParser.cpp
+
+swfmill-SVGPointsParser.obj: swft/SVGPointsParser.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-SVGPointsParser.obj -MD -MP -MF $(DEPDIR)/swfmill-SVGPointsParser.Tpo -c -o swfmill-SVGPointsParser.obj `if test -f 'swft/SVGPointsParser.cpp'; then $(CYGPATH_W) 'swft/SVGPointsParser.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/SVGPointsParser.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-SVGPointsParser.Tpo $(DEPDIR)/swfmill-SVGPointsParser.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/SVGPointsParser.cpp' object='swfmill-SVGPointsParser.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-SVGPointsParser.obj `if test -f 'swft/SVGPointsParser.cpp'; then $(CYGPATH_W) 'swft/SVGPointsParser.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/SVGPointsParser.cpp'; fi`
+
+swfmill-SVGTransformParser.o: swft/SVGTransformParser.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-SVGTransformParser.o -MD -MP -MF $(DEPDIR)/swfmill-SVGTransformParser.Tpo -c -o swfmill-SVGTransformParser.o `test -f 'swft/SVGTransformParser.cpp' || echo '$(srcdir)/'`swft/SVGTransformParser.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-SVGTransformParser.Tpo $(DEPDIR)/swfmill-SVGTransformParser.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/SVGTransformParser.cpp' object='swfmill-SVGTransformParser.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-SVGTransformParser.o `test -f 'swft/SVGTransformParser.cpp' || echo '$(srcdir)/'`swft/SVGTransformParser.cpp
+
+swfmill-SVGTransformParser.obj: swft/SVGTransformParser.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-SVGTransformParser.obj -MD -MP -MF $(DEPDIR)/swfmill-SVGTransformParser.Tpo -c -o swfmill-SVGTransformParser.obj `if test -f 'swft/SVGTransformParser.cpp'; then $(CYGPATH_W) 'swft/SVGTransformParser.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/SVGTransformParser.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-SVGTransformParser.Tpo $(DEPDIR)/swfmill-SVGTransformParser.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/SVGTransformParser.cpp' object='swfmill-SVGTransformParser.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-SVGTransformParser.obj `if test -f 'swft/SVGTransformParser.cpp'; then $(CYGPATH_W) 'swft/SVGTransformParser.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/SVGTransformParser.cpp'; fi`
+
+swfmill-SVGAttributeParser.o: swft/SVGAttributeParser.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-SVGAttributeParser.o -MD -MP -MF $(DEPDIR)/swfmill-SVGAttributeParser.Tpo -c -o swfmill-SVGAttributeParser.o `test -f 'swft/SVGAttributeParser.cpp' || echo '$(srcdir)/'`swft/SVGAttributeParser.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-SVGAttributeParser.Tpo $(DEPDIR)/swfmill-SVGAttributeParser.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/SVGAttributeParser.cpp' object='swfmill-SVGAttributeParser.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-SVGAttributeParser.o `test -f 'swft/SVGAttributeParser.cpp' || echo '$(srcdir)/'`swft/SVGAttributeParser.cpp
+
+swfmill-SVGAttributeParser.obj: swft/SVGAttributeParser.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-SVGAttributeParser.obj -MD -MP -MF $(DEPDIR)/swfmill-SVGAttributeParser.Tpo -c -o swfmill-SVGAttributeParser.obj `if test -f 'swft/SVGAttributeParser.cpp'; then $(CYGPATH_W) 'swft/SVGAttributeParser.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/SVGAttributeParser.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-SVGAttributeParser.Tpo $(DEPDIR)/swfmill-SVGAttributeParser.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='swft/SVGAttributeParser.cpp' object='swfmill-SVGAttributeParser.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-SVGAttributeParser.obj `if test -f 'swft/SVGAttributeParser.cpp'; then $(CYGPATH_W) 'swft/SVGAttributeParser.cpp'; else $(CYGPATH_W) '$(srcdir)/swft/SVGAttributeParser.cpp'; fi`
 
 swfmill-Geom.o: Geom.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-Geom.o -MD -MP -MF $(DEPDIR)/swfmill-Geom.Tpo -c -o swfmill-Geom.o `test -f 'Geom.cpp' || echo '$(srcdir)/'`Geom.cpp
@@ -724,81 +1091,25 @@ swfmill-gSWFSize.obj: gSWFSize.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-gSWFSize.obj `if test -f 'gSWFSize.cpp'; then $(CYGPATH_W) 'gSWFSize.cpp'; else $(CYGPATH_W) '$(srcdir)/gSWFSize.cpp'; fi`
 
+swfmill-simple.o: xslt/simple.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-simple.o -MD -MP -MF $(DEPDIR)/swfmill-simple.Tpo -c -o swfmill-simple.o `test -f 'xslt/simple.cpp' || echo '$(srcdir)/'`xslt/simple.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-simple.Tpo $(DEPDIR)/swfmill-simple.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='xslt/simple.cpp' object='swfmill-simple.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-simple.o `test -f 'xslt/simple.cpp' || echo '$(srcdir)/'`xslt/simple.cpp
+
+swfmill-simple.obj: xslt/simple.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -MT swfmill-simple.obj -MD -MP -MF $(DEPDIR)/swfmill-simple.Tpo -c -o swfmill-simple.obj `if test -f 'xslt/simple.cpp'; then $(CYGPATH_W) 'xslt/simple.cpp'; else $(CYGPATH_W) '$(srcdir)/xslt/simple.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/swfmill-simple.Tpo $(DEPDIR)/swfmill-simple.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='xslt/simple.cpp' object='swfmill-simple.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(swfmill_CXXFLAGS) $(CXXFLAGS) -c -o swfmill-simple.obj `if test -f 'xslt/simple.cpp'; then $(CYGPATH_W) 'xslt/simple.cpp'; else $(CYGPATH_W) '$(srcdir)/xslt/simple.cpp'; fi`
+
 mostlyclean-libtool:
 	-rm -f *.lo
 
 clean-libtool:
 	-rm -rf .libs _libs
-
-# This directory's subdirectories are mostly independent; you can cd
-# into them and run `make' without going through this Makefile.
-# To change the values of `make' variables: instead of editing Makefiles,
-# (1) if the variable is set in `config.status', edit `config.status'
-#     (which will cause the Makefiles to be regenerated when you run `make');
-# (2) otherwise, pass the desired values on the `make' command line.
-$(RECURSIVE_TARGETS):
-	@failcom='exit 1'; \
-	for f in x $$MAKEFLAGS; do \
-	  case $$f in \
-	    *=* | --[!k]*);; \
-	    *k*) failcom='fail=yes';; \
-	  esac; \
-	done; \
-	dot_seen=no; \
-	target=`echo $@ | sed s/-recursive//`; \
-	list='$(SUBDIRS)'; for subdir in $$list; do \
-	  echo "Making $$target in $$subdir"; \
-	  if test "$$subdir" = "."; then \
-	    dot_seen=yes; \
-	    local_target="$$target-am"; \
-	  else \
-	    local_target="$$target"; \
-	  fi; \
-	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
-	  || eval $$failcom; \
-	done; \
-	if test "$$dot_seen" = "no"; then \
-	  $(MAKE) $(AM_MAKEFLAGS) "$$target-am" || exit 1; \
-	fi; test -z "$$fail"
-
-$(RECURSIVE_CLEAN_TARGETS):
-	@failcom='exit 1'; \
-	for f in x $$MAKEFLAGS; do \
-	  case $$f in \
-	    *=* | --[!k]*);; \
-	    *k*) failcom='fail=yes';; \
-	  esac; \
-	done; \
-	dot_seen=no; \
-	case "$@" in \
-	  distclean-* | maintainer-clean-*) list='$(DIST_SUBDIRS)' ;; \
-	  *) list='$(SUBDIRS)' ;; \
-	esac; \
-	rev=''; for subdir in $$list; do \
-	  if test "$$subdir" = "."; then :; else \
-	    rev="$$subdir $$rev"; \
-	  fi; \
-	done; \
-	rev="$$rev ."; \
-	target=`echo $@ | sed s/-recursive//`; \
-	for subdir in $$rev; do \
-	  echo "Making $$target in $$subdir"; \
-	  if test "$$subdir" = "."; then \
-	    local_target="$$target-am"; \
-	  else \
-	    local_target="$$target"; \
-	  fi; \
-	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
-	  || eval $$failcom; \
-	done && test -z "$$fail"
-tags-recursive:
-	list='$(SUBDIRS)'; for subdir in $$list; do \
-	  test "$$subdir" = . || (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) tags); \
-	done
-ctags-recursive:
-	list='$(SUBDIRS)'; for subdir in $$list; do \
-	  test "$$subdir" = . || (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) ctags); \
-	done
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -810,23 +1121,10 @@ ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	mkid -fID $$unique
 tags: TAGS
 
-TAGS: tags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
+TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 		$(TAGS_FILES) $(LISP)
 	tags=; \
 	here=`pwd`; \
-	if ($(ETAGS) --etags-include --version) >/dev/null 2>&1; then \
-	  include_option=--etags-include; \
-	  empty_fix=.; \
-	else \
-	  include_option=--include; \
-	  empty_fix=; \
-	fi; \
-	list='$(SUBDIRS)'; for subdir in $$list; do \
-	  if test "$$subdir" = .; then :; else \
-	    test ! -f $$subdir/TAGS || \
-	      tags="$$tags $$include_option=$$here/$$subdir/TAGS"; \
-	  fi; \
-	done; \
 	list='$(SOURCES) $(HEADERS)  $(LISP) $(TAGS_FILES)'; \
 	unique=`for i in $$list; do \
 	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
@@ -839,7 +1137,7 @@ TAGS: tags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 	    $$tags $$unique; \
 	fi
 ctags: CTAGS
-CTAGS: ctags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
+CTAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 		$(TAGS_FILES) $(LISP)
 	tags=; \
 	list='$(SOURCES) $(HEADERS)  $(LISP) $(TAGS_FILES)'; \
@@ -886,42 +1184,24 @@ distdir: $(DISTFILES)
 	    || exit 1; \
 	  fi; \
 	done
-	list='$(DIST_SUBDIRS)'; for subdir in $$list; do \
-	  if test "$$subdir" = .; then :; else \
-	    test -d "$(distdir)/$$subdir" \
-	    || $(MKDIR_P) "$(distdir)/$$subdir" \
-	    || exit 1; \
-	    distdir=`$(am__cd) $(distdir) && pwd`; \
-	    top_distdir=`$(am__cd) $(top_distdir) && pwd`; \
-	    (cd $$subdir && \
-	      $(MAKE) $(AM_MAKEFLAGS) \
-	        top_distdir="$$top_distdir" \
-	        distdir="$$distdir/$$subdir" \
-		am__remove_distdir=: \
-		am__skip_length_check=: \
-	        distdir) \
-	      || exit 1; \
-	  fi; \
-	done
 check-am: all-am
 check: $(BUILT_SOURCES)
-	$(MAKE) $(AM_MAKEFLAGS) check-recursive
+	$(MAKE) $(AM_MAKEFLAGS) check-am
 all-am: Makefile $(PROGRAMS) $(HEADERS)
-installdirs: installdirs-recursive
-installdirs-am:
+installdirs:
 	for dir in "$(DESTDIR)$(bindir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: $(BUILT_SOURCES)
-	$(MAKE) $(AM_MAKEFLAGS) install-recursive
-install-exec: install-exec-recursive
-install-data: install-data-recursive
-uninstall: uninstall-recursive
+	$(MAKE) $(AM_MAKEFLAGS) install-am
+install-exec: install-exec-am
+install-data: install-data-am
+uninstall: uninstall-am
 
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 
-installcheck: installcheck-recursive
+installcheck: installcheck-am
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
 	  install_sh_PROGRAM="$(INSTALL_STRIP_PROGRAM)" INSTALL_STRIP_FLAG=-s \
@@ -940,86 +1220,90 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
-clean: clean-recursive
+clean: clean-am
 
 clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
 
-distclean: distclean-recursive
+distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
 
-dvi: dvi-recursive
+dvi: dvi-am
 
 dvi-am:
 
-html: html-recursive
+html: html-am
 
-info: info-recursive
+info: info-am
 
 info-am:
 
 install-data-am:
 
-install-dvi: install-dvi-recursive
+install-dvi: install-dvi-am
 
 install-exec-am: install-binPROGRAMS
 
-install-html: install-html-recursive
+install-html: install-html-am
 
-install-info: install-info-recursive
+install-info: install-info-am
 
 install-man:
 
-install-pdf: install-pdf-recursive
+install-pdf: install-pdf-am
 
-install-ps: install-ps-recursive
+install-ps: install-ps-am
 
 installcheck-am:
 
-maintainer-clean: maintainer-clean-recursive
+maintainer-clean: maintainer-clean-am
 	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
-mostlyclean: mostlyclean-recursive
+mostlyclean: mostlyclean-am
 
 mostlyclean-am: mostlyclean-compile mostlyclean-generic \
 	mostlyclean-libtool
 
-pdf: pdf-recursive
+pdf: pdf-am
 
 pdf-am:
 
-ps: ps-recursive
+ps: ps-am
 
 ps-am:
 
 uninstall-am: uninstall-binPROGRAMS
 
-.MAKE: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) install-am \
-	install-strip
+.MAKE: install-am install-strip
 
-.PHONY: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) CTAGS GTAGS \
-	all all-am check check-am clean clean-binPROGRAMS \
-	clean-generic clean-libtool ctags ctags-recursive distclean \
-	distclean-compile distclean-generic distclean-libtool \
-	distclean-tags distdir dvi dvi-am html html-am info info-am \
-	install install-am install-binPROGRAMS install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs installdirs-am maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags tags-recursive uninstall uninstall-am \
+.PHONY: CTAGS GTAGS all all-am check check-am clean clean-binPROGRAMS \
+	clean-generic clean-libtool ctags distclean distclean-compile \
+	distclean-generic distclean-libtool distclean-tags distdir dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-binPROGRAMS install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am install-man \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am tags uninstall uninstall-am \
 	uninstall-binPROGRAMS
 
 
-$(GENERATED_FILES) $(BUILT_SOURCES):
+$(CODEGEN_GENERATEDSOURCES) $(CODEGEN_GENERATEDHEADERS):
 	xsltproc $(srcdir)/codegen/mk.xsl $(srcdir)/codegen/source.xml
+
+$(SIMPLE_DIALECT_GENERATEDSOURCES): $(SIMPLE_DIALECT_GENERATEDSOURCES:.cpp=.xml) xslt/assemble.xsl $(SIMPLE_DIALECT_XSLTS)
+	xsltproc $(srcdir)/xslt/assemble.xsl $< > $(@:.cpp=.xsl)
+	echo "#include \"xslt/xslt.h\"" > $@
+	echo "const char *xslt_simple = " >> $@
+	sed -e "s/namespaces=\\\"hack\\\"/$(NAMESPACES)/" -e "s/\"/\\\\\"/g" -e "s/\(.*\)/\"\1\\\\n\"/g" $(@:.cpp=.xsl) >> $@
+	echo ";" >> $@
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

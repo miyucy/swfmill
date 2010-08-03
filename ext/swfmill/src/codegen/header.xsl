@@ -26,13 +26,14 @@ struct Context {
 		bool debugTrace;
 		bool exportAssets;
 		bool quiet;
-		bool convertEncoding;
-		const char *swf_encoding;
 		
 		bool isLast;
 		char tagVersion;
 		bool alpha;
 		bool many_shapes;
+
+		bool convertEncoding;
+		const char *swf_encoding;
 		
 		<xsl:for-each select="contextvariable">
 			<xsl:variable name="tmp">

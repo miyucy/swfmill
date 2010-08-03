@@ -12,9 +12,9 @@
 namespace <xsl:value-of select="/format/@format"/> {
 
 xmlChar *toXmlChar(const Context *ctx, const char *from_str) {
-	if (ctx->convertEncoding) {
+	if (ctx-&gt;convertEncoding) {
 		size_t len = strlen(from_str);
-		iconv_t cd = iconv_open("UTF-8", ctx->swf_encoding);
+		iconv_t cd = iconv_open("UTF-8", ctx-&gt;swf_encoding);
 		if (cd &lt; 0) {
 			fprintf(stderr, "iconv_open failed.\n");
 			return xmlCharStrdup("");
@@ -49,7 +49,7 @@ xmlChar *toXmlChar(const Context *ctx, const char *from_str) {
 				buf_size *= 2;
 				continue;
 			}
-			*pout = '\0';
+                        *pout = '\0';
 			break;
 		}
 		iconv_close(cd);
@@ -124,8 +124,8 @@ void <xsl:value-of select="@name"/>::writeXML( xmlNodePtr xml, Context *ctx ) {
 
 <xsl:template match="string" mode="writexml">
 	if( <xsl:value-of select="@name"/> ) {
-		xmlChar *xmlstr = toXmlChar( ctx, <xsl:value-of select="@name"/> );
-		xmlSetProp( node, (const xmlChar *)"<xsl:value-of select="@name"/>", xmlstr );
+		xmlChar *xmlstr = toXmlChar(ctx, <xsl:value-of select="@name"/>);
+		xmlSetProp(node, (const xmlChar *)"<xsl:value-of select="@name"/>", xmlstr);
 	}
 </xsl:template>
 

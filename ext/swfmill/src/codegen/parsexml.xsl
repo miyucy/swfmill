@@ -7,24 +7,18 @@
 #include &lt;cstring&gt;
 #include &lt;cctype&gt;
 #include &lt;cstdlib&gt;
+#include "base64.h"
 #include &lt;errno.h&gt;
 #include &lt;iconv.h&gt;
-#include "base64.h"
 
 using namespace std;
 
 namespace <xsl:value-of select="/format/@format"/> {
 
-char *strdupx(const char *src) {
-	char *t = new char[strlen(src)+1];
-	strcpy(t, src);
-	return  t;
-}
-
 char *fromXmlChar(const Context *ctx, const xmlChar *from_str) {
-	if (ctx->convertEncoding) {
+	if (ctx-&gt;convertEncoding) {
 		size_t len = strlen((const char *)from_str);
-		iconv_t cd = iconv_open(ctx->swf_encoding, "UTF-8");
+		iconv_t cd = iconv_open(ctx-&gt;swf_encoding, "UTF-8");
 		if (cd &lt; 0) {
 			fprintf(stderr, "iconv_open failed.\n");
 			char *buf = new char[1];
@@ -63,8 +57,17 @@ char *fromXmlChar(const Context *ctx, const xmlChar *from_str) {
 			return dst;
 		}
 	} else {
-		return strdupx((const char *)from_str);
+		size_t len = strlen((const char *)from_str) + 1;
+		char *buf = new char[len];
+		strcpy(buf, (const char *)from_str);
+		return buf;
 	}
+}
+
+char *strdupx(const char *src) {
+	char *t = new char[strlen(src)+1];
+	strcpy(t, src);
+	return  t;
 }
 
 <xsl:for-each select="type|tag|action|filter|style|stackitem|namespaceconstant|multinameconstant|trait|opcode">
@@ -222,7 +225,7 @@ void <xsl:value-of select="@name"/>::parseXML( xmlNodePtr node, Context *ctx ) {
 <xsl:template match="string" mode="parsexml">
 	tmp = xmlGetProp( node, (const xmlChar *)"<xsl:value-of select="@name"/>" );
 	if( tmp ) {
-		<xsl:value-of select="@name"/> = fromXmlChar(ctx, tmp);
+		<xsl:value-of select="@name"/> = fromXmlChar(ctx, (const xmlChar*)tmp);
 		xmlFree(tmp);
 	} else {
 		fprintf(stderr,"WARNING: no <xsl:value-of select="@name"/> property in %s element\n", (const char *)node->name );

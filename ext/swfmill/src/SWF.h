@@ -23,13 +23,14 @@ struct Context {
 		bool debugTrace;
 		bool exportAssets;
 		bool quiet;
-		bool convertEncoding;
-		const char *swf_encoding;
 		
 		bool isLast;
 		char tagVersion;
 		bool alpha;
 		bool many_shapes;
+
+		bool convertEncoding;
+		const char *swf_encoding;
 		
 		int fillBits;
 		int lineBits;
