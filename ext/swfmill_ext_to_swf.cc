@@ -7,189 +7,254 @@
 extern VALUE rb_eSwfmill_Error;
 extern VALUE rb_eSwfmill_EOFError;
 
-/*
-  call-seq:
-    Swfmill.to_swf(str [, params]) -> Array
+#define SIGNATURE_SIZE 8
+typedef struct {
+    VALUE            string;
+    VALUE          encoding;
+    bool         compressed;
+    SWF::Header     *header;
+    SWF::Context   *context;
+    size_t         datasize;
+    unsigned char *databuff;
+    int      compress_level;
+    xmlDocPtr      document;
+    xmlNodePtr    root_node;
+    xmlNodePtr  header_node;
+} swfmill_to_swf;
 
-  +params+
-    {
-      :compress => Boolean,
-      :level => Symbol,
-    }
-
-  :compress
-    true
-    false
-    nil
-
-  :level
-    :best
-    :speed
-    :none
- */
-VALUE swfmill_ext_to_swf(int argc, VALUE *argv, VALUE self)
+static void
+sts_mark(swfmill_to_swf * const sts)
 {
-    VALUE arg_str, arg_param;
-    int arg_num = rb_scan_args(argc, argv, "11", &arg_str, &arg_param);
-
-    unsigned char version = 7;
-    bool       compressed = false;
-    int          compress = 0;
-    int    compress_level = Z_BEST_COMPRESSION;
-    char*        encoding = NULL;
-
-    Check_Type(arg_str, T_STRING);
-    if(arg_num == 2)
+    if(sts != NULL)
     {
-        Check_Type(arg_param, T_HASH);
-
-        VALUE lvl = rb_hash_aref(arg_param, ID2SYM(rb_intern("level")));
-        if(!NIL_P(lvl))
-        {
-            if(lvl == ID2SYM(rb_intern("speed")))
-            {
-                compress_level = Z_BEST_SPEED;
-            }
-            if(lvl == ID2SYM(rb_intern("none")))
-            {
-                compress_level = Z_NO_COMPRESSION;
-            }
-        }
-
-        VALUE cmp = rb_hash_aref(arg_param, ID2SYM(rb_intern("compressed")));
-        if(!NIL_P(cmp))
-        {
-            compress = cmp == Qtrue ? 1 : 2;
-        }
-
-        VALUE enc = rb_hash_aref(arg_param, ID2SYM(rb_intern("encoding")));
-        if(!NIL_P(enc))
-        {
-            encoding = StringValuePtr(enc);
-        }
+        rb_gc_mark(sts->string);
+        rb_gc_mark(sts->encoding);
     }
+}
 
-    char*      data = StringValuePtr(arg_str);
-    int        size = RSTRING_LEN(arg_str);
-    xmlDocPtr  doc  = xmlParseMemory(data, size);
+static void
+sts_free(swfmill_to_swf * const sts)
+{
+    if(sts != NULL)
+    {
+        if(sts->document != NULL)
+        {
+            xmlFreeDoc(sts->document);
+            sts->document = NULL;
+        }
 
-    if(doc == NULL)
+        ruby_xfree(sts->databuff);
+        sts->databuff = NULL;
+
+        delete sts->header;
+        sts->header = NULL;
+
+        delete sts->context;
+        sts->context = NULL;
+    }
+}
+
+static bool
+sts_parse_document(swfmill_to_swf * const sts)
+{
+    sts->document = xmlParseMemory(RSTRING_PTR(sts->string), RSTRING_LEN(sts->string));
+    if(sts->document == NULL)
     {
         rb_raise(rb_eSwfmill_Error, "XML parser error");
+        return false;
     }
 
-    xmlNodePtr root = doc->xmlRootNode;
-    if(strcmp((const char*)root->name, "swf") != 0)
+    sts->root_node = sts->document->xmlRootNode;
+    if(strcmp((const char*)sts->root_node->name, "swf") != 0)
     {
-        xmlFreeDoc(doc);
         rb_raise(rb_eSwfmill_Error, "doesn't seem to be a swfml file");
+        return false;
     }
 
-    xmlNodePtr headerNode = root->children;
+    return true;
+}
+
+static bool
+sts_search_header_node(swfmill_to_swf * const sts)
+{
+    xmlNodePtr headerNode = sts->root_node->children;
+
     while((headerNode != NULL) &&
           (headerNode->name == NULL || strcmp((const char*)headerNode->name, "Header") != 0))
     {
         headerNode = headerNode->next;
     }
+
     if(headerNode == NULL)
     {
-        xmlFreeDoc(doc);
         rb_raise(rb_eSwfmill_Error, "swfml file is empty");
+        return false;
     }
 
+    sts->header_node = headerNode;
+
+    return true;
+}
+
+static void
+sts_get_version(swfmill_to_swf * const sts)
+{
+    xmlChar *tmp = xmlGetProp(sts->root_node, (const xmlChar*)"version");
+
+    sts->context = new SWF::Context;
+    sts->context->debugTrace = false;
+    sts->context->quiet      = true;
+
+    if(tmp != NULL)
     {
-        xmlChar *tmp;
-        tmp = xmlGetProp(root, (const xmlChar*)"version");
-        if(tmp != NULL)
-        {
-            int i;
-            sscanf((char*)tmp, "%i", &i);
-            version = i;
-            xmlFree(tmp);
-        }
-
-        tmp = xmlGetProp(root, (const xmlChar*)"compressed");
-        if(tmp != NULL)
-        {
-            int i;
-            sscanf((char*)tmp, "%i", &i);
-            compressed = i > 0;
-            xmlFree(tmp);
-        }
+        sscanf((char*)tmp, "%i", &sts->context->swfVersion);
+        xmlFree(tmp);
     }
-    if(compress > 0)
+}
+
+static void
+sts_get_compressed(swfmill_to_swf * const sts)
+{
+    xmlChar *tmp = xmlGetProp(sts->root_node, (const xmlChar*)"compressed");
+    int compress;
+
+    sts->compressed = false;
+    if(tmp != NULL)
     {
-        compressed = compress == 1;
+        sscanf((char*)tmp, "%i", &compress);
+        sts->compressed = compress > 0;
+        xmlFree(tmp);
     }
+}
 
-    SWF::Header header;
-    size_t swf_size;
+static void
+sts_parse_xml(swfmill_to_swf * const sts)
+{
+    sts->context->convertEncoding = true;
+    sts->context->swf_encoding = StringValueCStr(sts->encoding);
+
+    sts->header = new SWF::Header;
+    sts->header->parseXML(sts->header_node, sts->context);
+
+    sts->datasize = sts->header->getSize(sts->context, 0) / 8;
+    sts->databuff = (unsigned char*)ruby_xmalloc(sts->datasize + SIGNATURE_SIZE);
+}
+
+static bool
+sts_compress(swfmill_to_swf * const sts)
+{
+    if(!sts->compressed)
     {
-        SWF::Context context;
-        context.swfVersion = version;
-        if(encoding != NULL)
-        {
-            context.convertEncoding = true;
-            context.swf_encoding = encoding;
-        }
-        header.parseXML(headerNode, &context);
-        swf_size = header.getSize(&context, 0) / 8;
+        return true;
     }
 
-    char swf_head[8+1];
+    Deflate deflate(sts->databuff + SIGNATURE_SIZE, sts->datasize, sts->compress_level);
+
+    if(!deflate.compress())
     {
-        swf_size += 8;
-        snprintf(swf_head, 8, "%s%c%c%c%c%c",
-                 compressed ? "CWS" : "FWS",
-                 version,
-                 ((swf_size>> 0) & 0xFF),
-                 ((swf_size>> 8) & 0xFF),
-                 ((swf_size>>16) & 0xFF),
-                 ((swf_size>>24) & 0xFF));
-        swf_size -= 8;
+        rb_raise(rb_eSwfmill_Error, "compressing SWF: %s", deflate.error());
+        return false;
     }
 
-    unsigned char* swf_buff = (unsigned char*)ruby_xmalloc(swf_size);
+    ruby_xfree(sts->databuff);
+    sts->databuff = NULL;
+
+    sts->datasize = deflate.size();
+    sts->databuff = (unsigned char*)ruby_xmalloc(sts->datasize + SIGNATURE_SIZE);
+    memcpy(sts->databuff + SIGNATURE_SIZE, deflate.data(), sts->datasize);
+
+    return true;
+}
+
+static bool
+sts_write(swfmill_to_swf * const sts)
+{
+    SWF::Writer writer(sts->databuff + SIGNATURE_SIZE, sts->datasize);
+    size_t    datasize;
+
+    sts->header->write(&writer, sts->context);
+    switch(writer.getError())
     {
-        SWF::Context context;
-        SWF::Writer writer(swf_buff, swf_size);
-        context.swfVersion = version;
-        header.write(&writer, &context);
-        switch(writer.getError())
-        {
-        case SWFW_ERROR:
-            ruby_xfree(swf_buff);
-            xmlFreeDoc(doc);
-            rb_raise(rb_eSwfmill_Error, "unknown write error");
-            break;
-        case SWFW_FULL:
-            ruby_xfree(swf_buff);
-            xmlFreeDoc(doc);
-            rb_raise(rb_eSwfmill_Error, "write buffer full");
-            break;
-        }
+    case SWFW_ERROR:
+        rb_raise(rb_eSwfmill_Error, "unknown write error");
+        return false;
+    case SWFW_FULL:
+        rb_raise(rb_eSwfmill_Error, "write buffer full");
+        return false;
     }
 
-    if(compressed)
+    if(!sts_compress(sts))
     {
-        Deflate deflate(swf_buff, swf_size, compress_level);
-        if(!deflate.compress())
-        {
-            ruby_xfree(swf_buff);
-            xmlFreeDoc(doc);
-            rb_raise(rb_eSwfmill_Error, "Error compressing SWF: %s", deflate.error());
-        }
-        ruby_xfree(swf_buff);
-        swf_size = deflate.size();
-        swf_buff = (unsigned char*)ruby_xmalloc(swf_size);
-        memcpy(swf_buff, deflate.data(), swf_size);
+        return false;
     }
 
-    VALUE swf;
-    swf = rb_str_new(swf_head, 8);
-    rb_str_cat(swf, (const char*)swf_buff, swf_size);
+    sts->databuff[0] = (unsigned char)(sts->compressed ? 'C' : 'F');
+    sts->databuff[1] = (unsigned char)'W';
+    sts->databuff[2] = (unsigned char)'S';
+    sts->databuff[3] = (unsigned char)sts->context->swfVersion;
 
-    ruby_xfree(swf_buff);
-    xmlFreeDoc(doc);
-    return swf;
+    datasize = sts->datasize;
+    sts->databuff[4] = (unsigned char)((datasize >>  0) & 0xFF);
+    sts->databuff[5] = (unsigned char)((datasize >>  8) & 0xFF);
+    sts->databuff[6] = (unsigned char)((datasize >> 16) & 0xFF);
+    sts->databuff[7] = (unsigned char)((datasize >> 24) & 0xFF);
+
+    return true;
+}
+
+static bool
+sts_parse(swfmill_to_swf * const sts)
+{
+    if(!sts_parse_document(sts))
+    {
+        return false;
+    }
+    if(!sts_search_header_node(sts))
+    {
+        return false;
+    }
+    sts_get_version(sts);
+    sts_get_compressed(sts);
+    sts_parse_xml(sts);
+    if(!sts_write(sts))
+    {
+        return false;
+    }
+    return true;
+}
+
+static VALUE
+sts_to_string(swfmill_to_swf * const sts)
+{
+    VALUE str = rb_str_new((const char*)sts->databuff, sts->datasize + SIGNATURE_SIZE);
+
+    ruby_xfree(sts->databuff);
+    sts->databuff = NULL;
+
+    return str;
+}
+
+/*
+  call-seq:
+    Swfmill.to_swf(str, encoding) -> String
+ */
+VALUE swfmill_ext_to_swf(VALUE self, VALUE string, VALUE encoding)
+{
+    swfmill_to_swf *sts;
+
+    Check_Type(string, T_STRING);
+    Check_Type(encoding, T_STRING);
+
+    Data_Make_Struct(rb_cData, swfmill_to_swf, sts_mark, sts_free, sts);
+
+    sts->string         = string;
+    sts->encoding       = encoding;
+    sts->compress_level = Z_BEST_COMPRESSION;
+
+    if(sts_parse(sts))
+    {
+        return sts_to_string(sts);
+    }
+
+    return Qnil;
 }

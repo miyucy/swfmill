@@ -106,7 +106,8 @@ sh configure --config-cache --disable-dependency-tracking \
 FREETYPE_CFLAGS="#{$FREETYPE_CFLAGS}" FREETYPE_LIBS="#{$FREETYPE_LIBS}" \
 XML_CFLAGS="#{$XML_CFLAGS}" XML_LIBS="#{$XML_LIBS}" \
 XSLT_CFLAGS="#{$XSLT_CFLAGS}" XSLT_LIBS="#{$XSLT_LIBS}" \
-PNG_CFLAGS="#{$PNG_CFLAGS}" PNG_LIBS="#{$PNG_LIBS}"
+PNG_CFLAGS="#{$PNG_CFLAGS}" PNG_LIBS="#{$PNG_LIBS}" \
+CXXFLAGS="-O3"
 CMD
   raise "error: #{cmd}" unless system(cmd)
   cmd = "make"
