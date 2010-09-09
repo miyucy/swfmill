@@ -5,11 +5,11 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "swfmill"
-    gem.summary = %Q{Ruby bindings for swfmill}
-    gem.description = %Q{Ruby bindings for swfmill}
-    gem.email = "fistfvck@gmail.com"
-    gem.homepage = "http://github.com/fistfvck/swfmill"
-    gem.authors = ["fistfvck"]
+    gem.summary = %Q{swfmill bindings for Ruby}
+    gem.description = %Q{swfmill bindings for Ruby}
+    gem.email = "miyucy@gmail.com"
+    gem.homepage = "http://github.com/miyucy/swfmill"
+    gem.authors = ["miyucy"]
     gem.add_development_dependency "rspec", ">= 1.2.9"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
     gem.files << File.readlines(".swfmill").map{ |fn| fn.chomp }

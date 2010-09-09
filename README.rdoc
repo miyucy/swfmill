@@ -8,22 +8,42 @@
 
 from stream
 
-  xmlstr = Swfmill.load_stream(st) if st.responde_to?(:read)
-
-from file path
-
-  xmlstr = Swfmill.load_file("path/to/swf_file")
+  xml = Swfmill.swf2xml(io) if io.responde_to?(:read)
 
 from String
 
-  xmlstr = Swfmill.parse(File.open("path/to/swf_file"){|st| st.read })
+  string = File.open("path/to/swf_file"){|st| st.read }
+  xml = Swfmill.swf2xml(string)
+
+with encoding
+
+  xml = Swfmill.swf2xml(string, :e => "CP932")
+
+or
+
+  xml = Swfmill.swf2xml(string, :encoding => "CP932")
 
 === to SWF Data(String)
 
-  swf = Swfmill.publish(xmlstr)
+from stream
+
+  swf = Swfmill.xml2swf(io) if io.responde_to?(:read)
+
+from String
+
+  string = File.open("path/to/xml_file"){|st| st.read }
+  swf = Swfmill.xml2swf(string)
+
+with encoding
+
+  xml = Swfmill.xml2swf(string, :e => "CP932")
+
+or
+
+  xml = Swfmill.xml2swf(string, :encoding => "CP932")
 
 == Note on Patches/Pull Requests
- 
+
 * Fork the project.
 * Make your feature addition or bug fix.
 * Add tests for it. This is important so I don't break it in a
@@ -34,4 +54,4 @@ from String
 
 == Copyright
 
-Copyright (c) 2010 fistfvck. See LICENSE for details.
+Copyright (c) 2010 miyucy. See LICENSE for details.
