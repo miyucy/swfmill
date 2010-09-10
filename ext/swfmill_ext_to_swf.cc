@@ -51,6 +51,8 @@ sts_free(swfmill_to_swf * const sts)
 
         delete sts->context;
         sts->context = NULL;
+
+        xfree(sts);
     }
 }
 

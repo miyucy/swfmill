@@ -35,6 +35,8 @@ stx_free(swfmill_to_xml * const stx)
         stx->header = NULL;
         delete stx->context;
         stx->context = NULL;
+
+        xfree(stx);
     }
 }
 
