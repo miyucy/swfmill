@@ -165,15 +165,6 @@ stx_parse(swfmill_to_xml* const stx)
 }
 
 static void
-stx_init_xml_memory()
-{
-    xmlMemSetup((xmlFreeFunc)ruby_xfree,
-                (xmlMallocFunc)ruby_xmalloc,
-                (xmlReallocFunc)ruby_xrealloc,
-                strdup);
-}
-
-static void
 stx_set_version_proparty(const swfmill_to_xml* const stx, xmlNodePtr root)
 {
     char temp[4];
@@ -222,7 +213,6 @@ stx_to_string(swfmill_to_xml* const stx)
     VALUE       xml = Qnil;
     xmlDocPtr   doc;
     xmlNodePtr root;
-    stx_init_xml_memory();
 
     doc  = xmlNewDoc((const xmlChar*)"1.0");
     root = doc->xmlRootNode = xmlNewDocNode(doc, NULL, (const xmlChar*)"swf", NULL);
