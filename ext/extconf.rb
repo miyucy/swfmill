@@ -98,7 +98,7 @@ have_func("iconv", "iconv.h") or have_library("iconv", "iconv", "iconv.h")
 
 have_library("stdc++")
 
-$CFLAGS  += " -I./swfmill/src -I./swfmill/src/swft -I./swfmill/src/xslt"
+$INCFLAGS += " -I./swfmill/src -I./swfmill/src/swft -I./swfmill/src/xslt -I./libb64/include"
 
 Dir.chdir("swfmill") do
   cmd = <<CMD
@@ -114,7 +114,18 @@ CMD
   raise "error: #{cmd}" unless system(cmd)
 end
 
+Dir.chdir("libb64") do
+  cmd = "make"
+  raise "error: #{cmd}" unless system(cmd)
+end
+
 create_makefile("swfmill_ext")
 File.open(File.dirname("__FILE__") + "/Makefile", "ab") do |f|
-  f.puts "OBJS += #{Dir["swfmill/src/**/*.o"].join(" ")}"
+  exclude = ['swfmill/src/swfmill-base64.o']
+  objects = Dir["swfmill/src/**/*.o"] - exclude
+  f.puts "OBJS += #{objects.join(" ")}"
+end
+
+File.open(File.dirname("__FILE__") + "/Makefile", "ab") do |f|
+  f.puts "OBJS += libb64/src/cdecode.o libb64/src/cencode.o"
 end
