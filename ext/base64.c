@@ -13,6 +13,9 @@ long
 base64_encode(char *to, char *from, unsigned int len)
 {
     base64_encodestate state;
+    int size;
     base64_init_encodestate(&state);
-    return base64_encode_block(from, len, to, &state) + base64_encode_blockend(to, &state);
+    size = base64_encode_block(from, len, to, &state);
+    size+= base64_encode_blockend(to + size, &state);
+    return size;
 }
