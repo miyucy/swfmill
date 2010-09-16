@@ -341,8 +341,8 @@ fail:
 void swfmill_create_library( xmlNodePtr lib, const char *filename );
 
 void swfmill_create_library_dir( xmlNodePtr lib, const char *dir ) {
-	char tmp[256];
-	
+	char tmp[1024];
+
 	struct dirent *e;
 	DIR *d = opendir( dir );
 	if( d == NULL ) return;
