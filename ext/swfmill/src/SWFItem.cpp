@@ -103,12 +103,14 @@ Item::Item() {
 	cached_size = -1;
 }
 
+#if 0
 size_t Item::getSize( Context *ctx, int start_at ) {
 	if( cached_size == -1 ) {
 		cached_size = calcSize( ctx, start_at );
 	}
 	return cached_size;
 }
+#endif
 
 int Item::getHeaderSize( int size ) {
 	return 0;

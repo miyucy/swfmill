@@ -26,8 +26,13 @@ class Item {
 		virtual void parseXML( xmlNodePtr xml, Context *ctx ) = 0;
 			
 		// wont touch the context if size is cached.
-		size_t getSize( Context *ctx, int start_at );
-	
+		size_t getSize( Context *ctx, int start_at ) {
+			if( cached_size == -1 ) {
+				cached_size = calcSize( ctx, start_at );
+			}
+			return cached_size;
+		}
+
 	protected:
 		int getHeaderSize( int size );
 		void writeHeader( Writer *w, Context *ctx, size_t len );
