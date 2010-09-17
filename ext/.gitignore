@@ -4,3 +4,4 @@ mkmf.log
 *.o
 *.so
 !test/Makefile
+!libb64/**/Makefile
