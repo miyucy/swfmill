@@ -3,7 +3,7 @@ LIBRARIES = libb64.a
 # Build flags (uncomment one)
 #############################
 # Release build flags
-CFLAGS += -O3
+CFLAGS += -fPIC -O3
 #############################
 # Debug build flags
 #CFLAGS += -g
